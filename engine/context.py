@@ -24,7 +24,9 @@ def _ensure_aware(dt: datetime) -> datetime:
 
 def _time_match(event: Event, entry: ContextLedgerEntry) -> bool:
     ts = _ensure_aware(event.timestamp)
-    return _ensure_aware(entry.valid_from) <= ts <= _ensure_aware(entry.valid_until)
+    start = entry.effective_from or entry.valid_from
+    end = entry.effective_until or entry.valid_until
+    return _ensure_aware(start) <= ts <= _ensure_aware(end)
 
 
 def _resource_match(event: Event, entry: ContextLedgerEntry) -> Optional[bool]:
@@ -151,6 +153,10 @@ def match_event_against_entry(
         "matched": matched,
         "status": status.value,
         "score": score,
+        "late_context": bool(
+            _ensure_aware(entry.reviewed_at or entry.proposed_at or entry.valid_from)
+            > _ensure_aware(event.timestamp)
+        ),
     }
 
 
@@ -237,14 +243,6 @@ def classify_event(
     }
 
 
-CLASSIFICATION_WEIGHT = {
-    "public": 0.2,
-    "internal": 0.4,
-    "restricted": 0.75,
-    "critical": 1.0,
-}
-
-
 def _actor_history_days_at(
     db: Session, actor_id: int, as_of: datetime
 ) -> float:
@@ -270,8 +268,8 @@ def evaluate_context_compatibility(
     Returns buckets + aggregate coverage metrics.
 
     Temporal guard: only events with timestamp <= as_of are considered.
-    C_t is severity-weighted over explained/partial/unexplained only —
-    indeterminate events sit outside both risk and coverage.
+    C_t is direct constituent-event evidence coverage. Indeterminate evidence remains
+    in the denominator with zero credit, so uncertainty cannot disappear.
     """
     as_of_aware = _ensure_aware(as_of) if as_of is not None else None
 
@@ -292,6 +290,7 @@ def evaluate_context_compatibility(
         .filter(
             ContextLedgerEntry.actor_id == actor_id,
             ContextLedgerEntry.valid_from <= eval_as_of,
+            ContextLedgerEntry.approval_state == "approved",
         )
         .order_by(ContextLedgerEntry.valid_from.asc(), ContextLedgerEntry.id.asc())
         .all()
@@ -301,33 +300,22 @@ def evaluate_context_compatibility(
     breakdown = [
         classify_event(e, entries, history_days=history_days) for e in scoped
     ]
-    event_by_id = {e.id: e for e in scoped}
-
     explained = [b for b in breakdown if b["status"] == "explained"]
     partial = [b for b in breakdown if b["status"] == "partially_explained"]
     unexplained = [b for b in breakdown if b["status"] == "unexplained"]
     indeterminate = [b for b in breakdown if b["status"] == "indeterminate"]
 
-    # Severity-weighted C_t — indeterminate excluded from numerator and denominator
+    # Direct evidence coverage: each event is one constituent observation.
+    # Indeterminate receives no credit but remains in the denominator.
     score_map = {
         "explained": 1.0,
         "partially_explained": 0.5,
         "unexplained": 0.0,
     }
-    weighted_sum = 0.0
-    weight_total = 0.0
+    coverage_sum = 0.0
     for b in breakdown:
-        if b["status"] == "indeterminate":
-            continue
-        ev = event_by_id.get(b["event_id"])
-        w = CLASSIFICATION_WEIGHT.get(
-            (ev.resource_classification if ev else None) or "internal", 0.4
-        )
-        if ev and ev.action == "external_upload":
-            w = max(w, 0.9)
-        weighted_sum += score_map.get(b["status"], 0.0) * w
-        weight_total += w
-    c_t = weighted_sum / weight_total if weight_total > 0 else 0.0
+        coverage_sum += score_map.get(b["status"], 0.0)
+    c_t = coverage_sum / len(breakdown) if breakdown else 0.0
 
     matched_context_ids = sorted(
         {cid for b in breakdown for cid in b["matched_context_ids"]}
@@ -347,6 +335,7 @@ def evaluate_context_compatibility(
         "indeterminate_event_ids": [b["event_id"] for b in indeterminate],
         "C_t": round(c_t, 4),
         "matched_context_ids": matched_context_ids,
+        "considered_context_ids": [entry.id for entry in entries],
         "unmatched_behavior": unmatched_behavior,
         "residual_unresolved_count": len(indeterminate),
         "counts": {
@@ -378,7 +367,10 @@ def check_auto_reopen(db: Session, actor_id: int, new_events: list[Event]) -> li
 
     entries = (
         db.query(ContextLedgerEntry)
-        .filter(ContextLedgerEntry.actor_id == actor_id)
+        .filter(
+            ContextLedgerEntry.actor_id == actor_id,
+            ContextLedgerEntry.approval_state == "approved",
+        )
         .order_by(ContextLedgerEntry.valid_from.asc(), ContextLedgerEntry.id.asc())
         .all()
     )

@@ -1,0 +1,59 @@
+{
+  "controls": [
+    {
+      "active": false,
+      "applied_by_action_id": "rsp_8484ff0c42da4ebbb04caa0318d8be5f",
+      "control_type": "device_isolation",
+      "entity_ref": "ent_fe7ed6290e77ccab",
+      "state": {
+        "action_type": "isolate_device",
+        "expires_at": "2026-09-16T15:34:20.143394",
+        "rolled_back_at": "2026-09-16T15:19:20.222766+00:00",
+        "simulated": true
+      },
+      "target_key": "unknown-vps-77",
+      "updated_at": "2026-09-16T15:19:20.222766"
+    },
+    {
+      "active": true,
+      "applied_by_action_id": "rsp_fb06b82d8a2e48a08c38f744fe684f33",
+      "control_type": "monitoring",
+      "entity_ref": "ent_1198c4b28dc79e9b",
+      "state": {
+        "action_type": "observe",
+        "expires_at": "2026-09-16T09:15:03+00:00",
+        "simulated": true
+      },
+      "target_key": "ent_2a4880f65efabe40",
+      "updated_at": "2026-09-16T09:00:03"
+    },
+    {
+      "active": true,
+      "applied_by_action_id": "rsp_219b9159bfa2460a9b9943950ffa8f03",
+      "control_type": "upload_destination",
+      "entity_ref": "ent_fe7ed6290e77ccab",
+      "state": {
+        "action_type": "block_external_upload",
+        "expires_at": "2026-09-16T09:15:00+00:00",
+        "simulated": true
+      },
+      "target_key": "http://exfil.evil.example/drop",
+      "updated_at": "2026-09-16T09:00:00"
+    },
+    {
+      "active": true,
+      "applied_by_action_id": "rsp_6245d4d423ec401888f0868f2fbe50db",
+      "control_type": "upload_destination",
+      "entity_ref": "ent_e475f641a248714f",
+      "state": {
+        "action_type": "block_external_upload",
+        "expires_at": "2026-09-16T09:15:02+00:00",
+        "simulated": true
+      },
+      "target_key": "https://personal-cloud.example/upload",
+      "updated_at": "2026-09-16T09:00:02"
+    }
+  ],
+  "mode": "sandbox",
+  "simulated": true
+}

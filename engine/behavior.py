@@ -48,6 +48,62 @@ def _stddev(values: list[float]) -> float:
     return math.sqrt(var)
 
 
+def _haversine_km(a: Event, b: Event) -> float:
+    if None in (a.latitude, a.longitude, b.latitude, b.longitude):
+        return 0.0
+    lat1, lon1, lat2, lon2 = map(
+        math.radians, (a.latitude, a.longitude, b.latitude, b.longitude)
+    )
+    dlat, dlon = lat2 - lat1, lon2 - lon1
+    value = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    return 6371.0 * 2 * math.asin(min(1.0, math.sqrt(value)))
+
+
+def login_risk_features(window_events: list[Event], history: list[Event]) -> dict[str, float]:
+    """Geo-velocity, device novelty, and failed-login burst constituents."""
+    logins = sorted(
+        [event for event in window_events if event.action == "login"],
+        key=lambda event: _ensure_aware(event.timestamp),
+    )
+    max_velocity = 0.0
+    located = [event for event in logins if event.latitude is not None and event.longitude is not None]
+    for first, second in zip(located, located[1:]):
+        hours = (_ensure_aware(second.timestamp) - _ensure_aware(first.timestamp)).total_seconds() / 3600
+        if hours > 0:
+            max_velocity = max(max_velocity, _haversine_km(first, second) / hours)
+    geo_velocity_risk = max(0.0, min(1.0, max_velocity / 900.0))
+
+    known_devices = {event.device_id for event in history if event.action == "login"}
+    novel = sum(1 for event in logins if event.device_id not in known_devices)
+    device_novelty = novel / len(logins) if logins else 0.0
+
+    failed_times = [_ensure_aware(event.timestamp) for event in logins if event.result == "failure"]
+    max_failed_burst = 0
+    for start in failed_times:
+        max_failed_burst = max(
+            max_failed_burst,
+            sum(1 for timestamp in failed_times if start <= timestamp <= start + timedelta(minutes=15)),
+        )
+    failed_burst = max(0.0, min(1.0, max_failed_burst / 5.0))
+    return {
+        "geo_velocity_risk": round(geo_velocity_risk, 4),
+        "login_device_novelty": round(device_novelty, 4),
+        "failed_login_burst": round(failed_burst, 4),
+    }
+
+
+def compute_login_risk(features: dict[str, Any]) -> float:
+    """Symmetric noisy-OR over the three observable login-risk factors."""
+    values = [
+        max(0.0, min(1.0, float(features.get(name, 0.0))))
+        for name in ("geo_velocity_risk", "login_device_novelty", "failed_login_burst")
+    ]
+    complement = 1.0
+    for value in values:
+        complement *= 1.0 - value
+    return round(1.0 - complement, 4)
+
+
 def _events_in_window(
     events: list[Event], end: datetime, window_seconds: int
 ) -> list[Event]:
@@ -281,6 +337,7 @@ def compute_feature_vector(
             "suspicious_sequence_magnitude": seq_mag,
             "event_count": float(len(window_events)),
         }
+        features.update(login_risk_features(window_events, history))
         result["windows"][name] = features
 
     # Primary vector used by baseline/fusion: 24h window (most operationally relevant)

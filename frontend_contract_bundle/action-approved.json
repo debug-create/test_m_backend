@@ -1,0 +1,97 @@
+{
+  "action_id": "rsp_8484ff0c42da4ebbb04caa0318d8be5f",
+  "action_type": "isolate_device",
+  "approval_required": true,
+  "approved_at": "2026-09-16T15:19:20.181058",
+  "approved_by": "capture-approver",
+  "assessment_id": 6,
+  "automatic": false,
+  "blast_radius": {
+    "affected_destinations": [],
+    "affected_event_ids": [
+      889,
+      890,
+      891,
+      892,
+      893,
+      894
+    ],
+    "affected_permissions": [],
+    "affected_resources": [],
+    "affected_sessions": [
+      "unknown-vps-77"
+    ],
+    "evidence_paths": [],
+    "graph_generated_at": "2026-09-16T15:19:20.143394+00:00",
+    "potentially_disrupted_legitimate_activity": [],
+    "unaffected_activity": []
+  },
+  "case_id": 2,
+  "entity_ref": "ent_fe7ed6290e77ccab",
+  "evidence_categories": [
+    "data_movement",
+    "identity",
+    "privilege",
+    "resource_access",
+    "temporal_sequence"
+  ],
+  "executed_at": null,
+  "execution_result": null,
+  "expires_at": "2026-09-16T15:34:20.143394",
+  "failed_at": null,
+  "failure_reason": null,
+  "idempotency_key": "frontend-capture-isolate-device",
+  "mode": "sandbox",
+  "policy_decision": "allow",
+  "policy_reasons": [
+    "High-impact containment requires independent human approval"
+  ],
+  "policy_rule_id": "RP-HUMAN-CONTAINMENT-001",
+  "requested_at": "2026-09-16T15:19:20.143394",
+  "requested_by": "capture-operator",
+  "rollback_result": null,
+  "rolled_back_at": null,
+  "scoring_version": "event-fusion-v2",
+  "status": "approved",
+  "target_scope": {
+    "device": "unknown-vps-77"
+  },
+  "transitions": [
+    {
+      "details": {},
+      "from_status": null,
+      "id": 15,
+      "note": "Capture: explicit high-impact response request",
+      "principal": "capture-operator",
+      "timestamp": "2026-09-16T15:19:20.143394",
+      "to_status": "proposed"
+    },
+    {
+      "details": {},
+      "from_status": "proposed",
+      "id": 16,
+      "note": "Capture: explicit high-impact response request",
+      "principal": "capture-operator",
+      "timestamp": "2026-09-16T15:19:20.143394",
+      "to_status": "awaiting_approval"
+    },
+    {
+      "details": {},
+      "from_status": "awaiting_approval",
+      "id": 17,
+      "note": "Capture: independent blast-radius approval",
+      "principal": "capture-approver",
+      "timestamp": "2026-09-16T15:19:20.181058",
+      "to_status": "approved"
+    }
+  ],
+  "trigger_event_ids": [
+    889,
+    890,
+    891,
+    892,
+    893,
+    894
+  ],
+  "verification_result": null
+}

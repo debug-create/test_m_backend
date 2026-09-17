@@ -53,7 +53,10 @@ def test_indeterminate_is_separate_and_data_quality_is_sparse():
     assert risk["explanation_breakdown"][0]["status"] == "indeterminate"
     assert risk["residual_unresolved_count"] == 1
     assert risk["data_quality"] == "sparse"
-    assert risk["fusion_components"]["A_t"] == 0.0
+    # Indeterminate evidence remains in raw-risk computation; uncertainty is
+    # represented as zero coverage instead of disappearing from the model.
+    assert risk["fusion_components"]["A_t"] > 0.0
+    assert risk["context_coverage"] == 0.0
 
 
 def test_narrative_verdict_language_guard():

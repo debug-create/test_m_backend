@@ -1,0 +1,338 @@
+{
+  "case_id": 3,
+  "cycles": [],
+  "edges": [
+    {
+      "event_id": 983,
+      "explanation_status": "unexplained",
+      "id": "accessed:session:arjun-laptop:resource:finance-archive:983",
+      "source": "session:arjun-laptop",
+      "target": "resource:finance-archive",
+      "type": "accessed"
+    },
+    {
+      "event_id": 985,
+      "explanation_status": "unexplained",
+      "id": "accessed:session:arjun-laptop:resource:finance-archive:985",
+      "source": "session:arjun-laptop",
+      "target": "resource:finance-archive",
+      "type": "accessed"
+    },
+    {
+      "event_id": 979,
+      "explanation_status": "explained",
+      "id": "accessed:session:arjun-laptop:resource:migration-repo:979",
+      "source": "session:arjun-laptop",
+      "target": "resource:migration-repo",
+      "type": "accessed"
+    },
+    {
+      "event_id": 980,
+      "explanation_status": "explained",
+      "id": "accessed:session:arjun-laptop:resource:migration-repo:980",
+      "source": "session:arjun-laptop",
+      "target": "resource:migration-repo",
+      "type": "accessed"
+    },
+    {
+      "event_id": 982,
+      "explanation_status": "explained",
+      "id": "accessed:session:arjun-laptop:resource:migration-repo:982",
+      "source": "session:arjun-laptop",
+      "target": "resource:migration-repo",
+      "type": "accessed"
+    },
+    {
+      "event_id": null,
+      "id": "affected-by:response-action:rsp_6245d4d423ec401888f0868f2fbe50db:destination:https://personal-cloud.example/upload:0",
+      "source": "response-action:rsp_6245d4d423ec401888f0868f2fbe50db",
+      "target": "destination:https://personal-cloud.example/upload",
+      "type": "affected-by"
+    },
+    {
+      "event_id": null,
+      "id": "affected-by:response-action:rsp_6245d4d423ec401888f0868f2fbe50db:device:arjun-laptop:0",
+      "source": "response-action:rsp_6245d4d423ec401888f0868f2fbe50db",
+      "target": "device:arjun-laptop",
+      "type": "affected-by"
+    },
+    {
+      "event_id": null,
+      "id": "affected-by:response-action:rsp_6245d4d423ec401888f0868f2fbe50db:session:arjun-laptop:0",
+      "source": "response-action:rsp_6245d4d423ec401888f0868f2fbe50db",
+      "target": "session:arjun-laptop",
+      "type": "affected-by"
+    },
+    {
+      "event_id": 978,
+      "explanation_status": "explained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:978",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": 979,
+      "explanation_status": "explained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:979",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": 980,
+      "explanation_status": "explained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:980",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": 981,
+      "explanation_status": "explained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:981",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": 982,
+      "explanation_status": "explained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:982",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": 983,
+      "explanation_status": "unexplained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:983",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": 984,
+      "explanation_status": "unexplained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:984",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": 985,
+      "explanation_status": "unexplained",
+      "id": "authenticated-from:session:arjun-laptop:device:arjun-laptop:985",
+      "source": "session:arjun-laptop",
+      "target": "device:arjun-laptop",
+      "type": "authenticated-from"
+    },
+    {
+      "event_id": null,
+      "id": "authorised-by:context:2:case:3:0",
+      "source": "context:2",
+      "target": "case:3",
+      "type": "authorised-by"
+    },
+    {
+      "event_id": null,
+      "id": "authorised-by:context:4:case:3:0",
+      "source": "context:4",
+      "target": "case:3",
+      "type": "authorised-by"
+    },
+    {
+      "event_id": null,
+      "id": "controlled-by:case:3:response-action:rsp_6245d4d423ec401888f0868f2fbe50db:0",
+      "source": "case:3",
+      "target": "response-action:rsp_6245d4d423ec401888f0868f2fbe50db",
+      "type": "controlled-by"
+    },
+    {
+      "event_id": 984,
+      "explanation_status": "unexplained",
+      "id": "downloaded-from:session:arjun-laptop:resource:finance-archive:984",
+      "source": "session:arjun-laptop",
+      "target": "resource:finance-archive",
+      "type": "downloaded-from"
+    },
+    {
+      "event_id": 981,
+      "explanation_status": "explained",
+      "id": "downloaded-from:session:arjun-laptop:resource:migration-repo:981",
+      "source": "session:arjun-laptop",
+      "target": "resource:migration-repo",
+      "type": "downloaded-from"
+    },
+    {
+      "event_id": 978,
+      "explanation_status": "explained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:978",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": 979,
+      "explanation_status": "explained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:979",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": 980,
+      "explanation_status": "explained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:980",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": 981,
+      "explanation_status": "explained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:981",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": 982,
+      "explanation_status": "explained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:982",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": 983,
+      "explanation_status": "unexplained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:983",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": 984,
+      "explanation_status": "unexplained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:984",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": 985,
+      "explanation_status": "unexplained",
+      "id": "owns-session:entity:ent_e475f641a248714f:session:arjun-laptop:985",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "session:arjun-laptop",
+      "type": "owns-session"
+    },
+    {
+      "event_id": null,
+      "id": "triggered:entity:ent_e475f641a248714f:case:3:0",
+      "source": "entity:ent_e475f641a248714f",
+      "target": "case:3",
+      "type": "triggered"
+    },
+    {
+      "event_id": 985,
+      "explanation_status": "unexplained",
+      "id": "uploaded-to:session:arjun-laptop:destination:https://personal-cloud.example/upload:985",
+      "source": "session:arjun-laptop",
+      "target": "destination:https://personal-cloud.example/upload",
+      "type": "uploaded-to"
+    }
+  ],
+  "entity_ref": "ent_e475f641a248714f",
+  "evidence_paths": [
+    [
+      "entity:ent_e475f641a248714f",
+      "session:arjun-laptop",
+      "destination:https://personal-cloud.example/upload"
+    ],
+    [
+      "entity:ent_e475f641a248714f",
+      "session:arjun-laptop",
+      "resource:finance-archive"
+    ],
+    [
+      "entity:ent_e475f641a248714f",
+      "session:arjun-laptop",
+      "resource:migration-repo"
+    ]
+  ],
+  "generated_at": "2026-09-16T15:19:20.101133Z",
+  "nodes": [
+    {
+      "id": "case:3",
+      "label": "Case 3",
+      "meta": {},
+      "type": "case"
+    },
+    {
+      "id": "context:2",
+      "label": "Context 2",
+      "meta": {
+        "late_context": false
+      },
+      "type": "context revision"
+    },
+    {
+      "id": "context:4",
+      "label": "Context 4",
+      "meta": {
+        "late_context": true
+      },
+      "type": "context revision"
+    },
+    {
+      "id": "destination:https://personal-cloud.example/upload",
+      "label": "https://personal-cloud.example/upload",
+      "meta": {},
+      "type": "destination"
+    },
+    {
+      "id": "device:arjun-laptop",
+      "label": "arjun-laptop",
+      "meta": {},
+      "type": "device"
+    },
+    {
+      "id": "entity:ent_e475f641a248714f",
+      "label": "ent_e475f641a248714f",
+      "meta": {},
+      "type": "entity"
+    },
+    {
+      "id": "resource:finance-archive",
+      "label": "finance-archive",
+      "meta": {
+        "classification": "critical"
+      },
+      "type": "resource"
+    },
+    {
+      "id": "resource:migration-repo",
+      "label": "migration-repo",
+      "meta": {
+        "classification": "internal"
+      },
+      "type": "resource"
+    },
+    {
+      "id": "response-action:rsp_6245d4d423ec401888f0868f2fbe50db",
+      "label": "block_external_upload",
+      "meta": {
+        "status": "active"
+      },
+      "type": "response action"
+    },
+    {
+      "id": "session:arjun-laptop",
+      "label": "arjun-laptop",
+      "meta": {},
+      "type": "session"
+    }
+  ]
+}

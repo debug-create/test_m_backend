@@ -12,7 +12,7 @@ from engine.baseline import compute_baseline_deviation
 from engine.changepoint import detect_change_points
 from engine.context import check_auto_reopen, evaluate_context_compatibility
 from engine.fusion import compute_risk_for_events, counterfactual_breakdown
-from models.db_models import Case, CohortThreshold, Entity, Event
+from models.db_models import Case, CaseAssessment, CaseEvent, CohortThreshold, Entity, Event
 from models.enums import CaseStatus
 
 
@@ -124,6 +124,7 @@ def create_or_update_case(
 ) -> Case:
     """Run modules 4–6 and persist a Case with live-computed scores."""
     as_of = _ensure_aware(as_of or datetime.now(timezone.utc))
+    events = [event for event in events if _ensure_aware(event.timestamp) <= as_of]
     risk = compute_risk_for_events(db, actor_id, events, as_of=as_of)
 
     # Find existing open/reopened/reviewing case for this actor to update
@@ -153,6 +154,8 @@ def create_or_update_case(
         explanation_breakdown=risk["explanation_breakdown"],
         baseline_weights=risk["baseline_weights"],
         feature_snapshot=risk["feature_snapshot"],
+        fusion_components=risk["fusion_components"],
+        event_risk_breakdown=risk["event_risk_breakdown"],
     )
 
     if existing:
@@ -162,16 +165,54 @@ def create_or_update_case(
     else:
         case = Case(actor_id=actor_id, status="open", created_at=as_of, **payload)
         db.add(case)
-
+    db.flush()
+    _record_assessment(db, case, risk, events, trigger="detection")
     db.commit()
     db.refresh(case)
     return case
 
 
-def recompute_case(db: Session, case: Case) -> Case:
+def _record_assessment(
+    db: Session, case: Case, risk: dict[str, Any], events: list[Event], trigger: str
+) -> None:
+    """Append an immutable assessment and synchronize relational evidence links."""
+    event_id_set = {e.id for e in events if e.id is not None}
+    event_ids = sorted(event_id_set)
+    existing_ids = {link.event_id for link in case.event_links}
+    for event_id in event_id_set - existing_ids:
+        db.add(CaseEvent(case_id=case.id, event_id=event_id))
+    for link in list(case.event_links):
+        if link.event_id not in event_id_set:
+            db.delete(link)
+
+    result = {
+        key: risk[key]
+        for key in (
+            "raw_deviation", "context_coverage", "residual_risk", "confidence",
+            "data_quality", "residual_unresolved_count", "primary_cause", "evidence",
+            "matched_context_ids", "unmatched_behavior", "explanation_breakdown",
+            "baseline_weights", "feature_snapshot", "fusion_components",
+            "event_risk_breakdown",
+        )
+    }
+    assessment = CaseAssessment(
+        case_id=case.id,
+        trigger=trigger,
+        input_event_ids=event_ids,
+        context_entry_ids=risk["context"]["considered_context_ids"],
+        result=result,
+    )
+    db.add(assessment)
+    db.flush()
+    case.current_assessment_id = assessment.id
+
+
+def recompute_case(
+    db: Session, case: Case, *, trigger: str = "explicit_recompute", commit: bool = True
+) -> Case:
     """
-    Re-run modules 2–6 from current Events + ContextLedgerEntry data.
-    THIS is what makes live context edits change the numbers.
+    Re-run modules 2–6 after an authorized input-state transition and append
+    a versioned assessment. Read handlers never call this function.
     """
     events = (
         db.query(Event).filter(Event.id.in_(case.event_ids or [])).all()
@@ -212,8 +253,15 @@ def recompute_case(db: Session, case: Case) -> Case:
     case.explanation_breakdown = risk["explanation_breakdown"]
     case.baseline_weights = risk["baseline_weights"]
     case.feature_snapshot = risk["feature_snapshot"]
+    case.fusion_components = risk["fusion_components"]
+    case.event_risk_breakdown = risk["event_risk_breakdown"]
 
-    db.commit()
+    _record_assessment(db, case, risk, events, trigger=trigger)
+
+    if commit:
+        db.commit()
+    else:
+        db.flush()
     db.refresh(case)
     return case
 
@@ -319,11 +367,12 @@ def rank_cases(
         .all()
     )
 
-    # Recompute each so ranking uses live numbers
+    # Ranking is a read: use the latest committed immutable assessment snapshot.
     enriched = []
     for case in cases:
-        case = recompute_case(db, case)
-        events = db.query(Event).filter(Event.id.in_(case.event_ids or [])).all()
+        events = [link.event for link in case.event_links]
+        if not events and case.event_ids:
+            events = db.query(Event).filter(Event.id.in_(case.event_ids)).all()
         breakdown = case.explanation_breakdown or []
         flagged = hard_rule_from_events(events, breakdown)
         actor = db.query(Entity).filter(Entity.id == case.actor_id).one()
@@ -336,7 +385,7 @@ def rank_cases(
         enriched.append(
             {
                 "case": case,
-                "actor_name": actor.display_name,
+                "actor_ref": actor.pseudonymous_id,
                 "hard_rule_flag": flagged,
                 "cohort_threshold": threshold,
                 "above_threshold": case.residual_risk >= threshold,
@@ -433,11 +482,9 @@ def apply_feedback(
 
 
 def build_shift_map(db: Session, case: Case) -> dict[str, Any]:
-    events = (
-        db.query(Event).filter(Event.id.in_(case.event_ids or [])).all()
-        if case.event_ids
-        else []
-    )
+    events = [link.event for link in case.event_links]
+    if not events and case.event_ids:
+        events = db.query(Event).filter(Event.id.in_(case.event_ids)).all()
     actor = db.query(Entity).filter(Entity.id == case.actor_id).one()
     breakdown = {b["event_id"]: b for b in (case.explanation_breakdown or [])}
 
@@ -449,7 +496,7 @@ def build_shift_map(db: Session, case: Case) -> dict[str, Any]:
     nodes[entity_node] = {
         "id": entity_node,
         "type": "entity",
-        "label": actor.display_name,
+        "label": actor.pseudonymous_id,
         "meta": {"role": actor.role, "department": actor.department},
     }
     domains.add(actor.department)
@@ -517,7 +564,7 @@ def build_shift_map(db: Session, case: Case) -> dict[str, Any]:
 
     return {
         "case_id": case.id,
-        "actor_id": case.actor_id,
+        "actor_ref": actor.pseudonymous_id,
         "change_point_timestamps": case.change_point_timestamps or [],
         "nodes": list(nodes.values()),
         "edges": edges,

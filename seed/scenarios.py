@@ -1,5 +1,5 @@
 """
-Seed data for three demo scenarios.
+Seed data for four synthetic demo scenarios and their response fixtures.
 
 IMPORTANT: We tune INPUT DATA (events, volumes, timing, context entries) until
 the real modules 2–6 produce the target risk profile. We never special-case
@@ -242,6 +242,8 @@ def seed_priya(db: Session) -> Entity:
         reason="role_change",
         valid_from=EPOCH + timedelta(days=21),
         valid_until=EPOCH + timedelta(days=90),
+        effective_from=EPOCH + timedelta(days=21),
+        effective_until=EPOCH + timedelta(days=90),
         allowed_resources=["sec-tooling", "sec-playbooks", "sec-incident-queue"],
         allowed_actions=[
             "login",
@@ -253,6 +255,8 @@ def seed_priya(db: Session) -> Entity:
         ],
         approved_destinations=None,
         approved_by="hr-ops",
+        proposed_at=EPOCH + timedelta(days=20),
+        reviewed_at=EPOCH + timedelta(days=20, hours=1),
     )
     db.add(ctx)
     db.flush()
@@ -487,6 +491,8 @@ def seed_arjun(db: Session) -> Entity:
         reason="project",
         valid_from=EPOCH + timedelta(days=25),
         valid_until=EPOCH + timedelta(days=45),
+        effective_from=EPOCH + timedelta(days=25),
+        effective_until=EPOCH + timedelta(days=45),
         allowed_resources=["migration-repo"],
         allowed_actions=[
             "login",
@@ -496,6 +502,8 @@ def seed_arjun(db: Session) -> Entity:
         ],
         approved_destinations=["s3://corp-migration-backup"],
         approved_by="eng-manager",
+        proposed_at=EPOCH + timedelta(days=24),
+        reviewed_at=EPOCH + timedelta(days=24, hours=1),
     )
     db.add(ctx)
     db.flush()
@@ -635,18 +643,121 @@ def run_seed(db: Session) -> None:
             f"data_quality={case.data_quality} "
             f"unresolved={case.residual_unresolved_count}"
         )
+    _seed_arjun_late_context_history(db)
+    _seed_response_states(db)
     db.commit()
     print("Seed complete.")
 
 
-def clear_all(db: Session) -> None:
-    from models.db_models import AnalystFeedback
+def _seed_arjun_late_context_history(db: Session) -> None:
+    """Exercise late-context review, then restore the stable scoped policy.
+
+    Both recomputations append assessments. The corrective revision supersedes the
+    broad late revision, so the final locked detection values remain unchanged.
+    """
+    actor = db.query(Entity).filter(Entity.display_name == "Arjun").one()
+    case = db.query(Case).filter(Case.actor_id == actor.id).one()
+    late_time = EPOCH + timedelta(days=46)
+    broad = ContextLedgerEntry(
+        actor_id=actor.id, reason="project",
+        valid_from=EPOCH + timedelta(days=25), valid_until=EPOCH + timedelta(days=45),
+        effective_from=EPOCH + timedelta(days=25),
+        effective_until=EPOCH + timedelta(days=45),
+        allowed_resources=["migration-repo", "finance-archive"],
+        allowed_actions=["login", "repo_access", "file_access", "file_download", "external_upload"],
+        approved_destinations=["s3://corp-migration-backup", "https://personal-cloud.example/upload"],
+        approved_by="seed-response-approver", approval_state="superseded",
+        proposed_by="seed-context-proposer", proposed_at=late_time,
+        reviewed_by="seed-context-approver", reviewed_at=late_time + timedelta(minutes=5),
+        review_note="Synthetic late-context review fixture", late_context=True,
+    )
+    db.add(broad)
+    db.flush()
+    coverage_before = case.context_coverage
+    broad.approval_state = "approved"
+    recompute_case(db, case, trigger="seed_late_context")
+    if case.context_coverage - coverage_before >= 0.25:
+        case.retroactive_justification_review = True
+    broad.approval_state = "superseded"
+    correction = ContextLedgerEntry(
+        actor_id=actor.id, reason="project",
+        valid_from=EPOCH + timedelta(days=25), valid_until=EPOCH + timedelta(days=45),
+        effective_from=EPOCH + timedelta(days=25),
+        effective_until=EPOCH + timedelta(days=45),
+        allowed_resources=["migration-repo"],
+        allowed_actions=["login", "repo_access", "file_access", "file_download"],
+        approved_destinations=["s3://corp-migration-backup"],
+        approved_by="seed-response-approver", approval_state="approved",
+        supersedes_id=broad.id, proposed_by="seed-context-proposer",
+        proposed_at=late_time + timedelta(minutes=10),
+        reviewed_by="seed-context-approver",
+        reviewed_at=late_time + timedelta(minutes=15),
+        review_note="Restore narrow migration scope after retroactive review",
+        late_context=True,
+    )
+    db.add(correction)
+    db.flush()
+    recompute_case(db, case, trigger="seed_late_context_correction")
+
+
+def _seed_response_states(db: Session) -> None:
+    """Create deterministic sandbox response fixtures from committed assessments."""
+    from engine.response_service import create_action, execute_action
+
+    response_time = datetime(2026, 9, 16, 9, 0, tzinfo=timezone.utc)
+    cases = {
+        actor.display_name: case
+        for case, actor in db.query(Case, Entity).join(Entity, Case.actor_id == Entity.id)
+    }
+    dev_hold = create_action(
+        db, cases["Devraj Malhotra"], "block_external_upload", None,
+        "seed-devraj-upload-hold", "seed-response-operator", now=response_time,
+        note="Synthetic policy-bounded autonomous protective hold",
+    )
+    execute_action(db, dev_hold, "seed-response-workflow", now=response_time)
+    create_action(
+        db, cases["Devraj Malhotra"], "revoke_session", None,
+        "seed-devraj-session-review", "seed-response-operator",
+        now=response_time + timedelta(seconds=1),
+        note="Synthetic high-impact action awaiting independent approval",
+    )
+    arjun_hold = create_action(
+        db, cases["Arjun"], "block_external_upload", None,
+        "seed-arjun-upload-hold", "seed-response-operator",
+        now=response_time + timedelta(seconds=2),
+        note="Scoped only to the unexplained external destination and session",
+    )
+    execute_action(db, arjun_hold, "seed-response-workflow",
+                   now=response_time + timedelta(seconds=2))
+    neha_observe = create_action(
+        db, cases["Neha (New Hire)"], "observe", None,
+        "seed-neha-observe", "seed-response-operator",
+        now=response_time + timedelta(seconds=3),
+        note="Sparse history permits observation, not containment",
+    )
+    execute_action(db, neha_observe, "seed-response-workflow",
+                   now=response_time + timedelta(seconds=3))
+
+
+def clear_all(db: Session, *, preserve_audit: bool = False) -> None:
+    from models.db_models import (
+        AnalystFeedback, AuditLog, CaseAssessment, CaseEvent, ResponseAction,
+        ResponseActionTransition, SandboxEnforcementState,
+    )
 
     # Delete in FK-safe order
     db.query(AnalystFeedback).delete()
+    db.query(SandboxEnforcementState).delete()
+    db.query(ResponseActionTransition).delete()
+    db.query(ResponseAction).delete()
+    db.query(CaseAssessment).delete()
+    db.query(CaseEvent).delete()
     db.query(Case).delete()
     db.query(Event).delete()
     db.query(ContextLedgerEntry).delete()
     db.query(CohortThreshold).delete()
     db.query(Entity).delete()
+    if not preserve_audit:
+        db.query(AuditLog).delete()
     db.commit()
+    db.expunge_all()

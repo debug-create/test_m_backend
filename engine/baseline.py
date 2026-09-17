@@ -6,6 +6,9 @@ import math
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 from sqlalchemy.orm import Session
 
 from config import (
@@ -19,6 +22,7 @@ from config import (
     MIN_PERSONAL_HISTORY_DAYS,
     ROLE_CHANGE_BLEND_DAYS,
     WINDOW_24H,
+    CLUSTER_EXCLUSION_DAYS,
 )
 from engine.behavior import FEATURE_KEYS, compute_feature_vector
 from models.db_models import ContextLedgerEntry, Entity, Event
@@ -68,34 +72,36 @@ def recent_role_change(
         .filter(
             ContextLedgerEntry.actor_id == actor_id,
             ContextLedgerEntry.reason == "role_change",
-            ContextLedgerEntry.valid_from >= cutoff,
-            ContextLedgerEntry.valid_from <= as_of,
+            ContextLedgerEntry.approval_state == "approved",
+            ContextLedgerEntry.effective_from >= cutoff,
+            ContextLedgerEntry.effective_from <= as_of,
         )
-        .order_by(ContextLedgerEntry.valid_from.desc())
+        .order_by(ContextLedgerEntry.effective_from.desc())
         .first()
     )
 
 
 def compute_weights(
-    db: Session, actor: Entity, as_of: datetime
+    db: Session, actor: Entity, as_of: datetime, *, cohort_size: Optional[int] = None,
+    cohort_metadata: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     """Inspectable weight logic for α, β, γ."""
     hist_days = actor_history_days(db, actor.id, as_of)
     role_change = recent_role_change(db, actor.id, as_of)
 
-    cohort_size = db.query(Entity).filter(Entity.role == actor.role).count()
+    cohort_size = cohort_size if cohort_size is not None else 1
     cohort_confidence = "high" if cohort_size >= MIN_COHORT_SIZE else "low"
 
     if hist_days < MIN_PERSONAL_HISTORY_DAYS:
         alpha, beta, gamma = ALPHA_NEW, BETA_NEW, GAMMA_NEW
         rationale = (
             f"New entity ({hist_days:.1f}d < {MIN_PERSONAL_HISTORY_DAYS}d history): "
-            "α low, β high"
+            "α low, behavioral-cohort β high"
         )
     elif role_change is not None:
         # Linearly blend personal weight down and cohort weight up during transition
         days_since = (
-            _ensure_aware(as_of) - _ensure_aware(role_change.valid_from)
+            _ensure_aware(as_of) - _ensure_aware(role_change.effective_from or role_change.valid_from)
         ).total_seconds() / 86400.0
         t = min(max(days_since / ROLE_CHANGE_BLEND_DAYS, 0.0), 1.0)
         # At t=0 (just changed): more cohort; at t=1: back toward established personal
@@ -104,11 +110,11 @@ def compute_weights(
         gamma = GAMMA_NEW + t * (GAMMA_ESTABLISHED - GAMMA_NEW)
         rationale = (
             f"Role change within {ROLE_CHANGE_BLEND_DAYS}d "
-            f"(t={t:.2f} through transition window): blending old/new cohort weights"
+            f"(t={t:.2f} through transition window): blending personal/behavioral-cohort weights"
         )
     else:
         alpha, beta, gamma = ALPHA_ESTABLISHED, BETA_ESTABLISHED, GAMMA_ESTABLISHED
-        rationale = "Established entity, no recent role change: α high"
+        rationale = "Established entity, no recent role change: personal α high"
 
     # Widen uncertainty if small cohort
     uncertainty_band = 1.0 if cohort_size >= MIN_COHORT_SIZE else 1.75
@@ -117,7 +123,7 @@ def compute_weights(
     total = alpha + beta + gamma
     alpha, beta, gamma = alpha / total, beta / total, gamma / total
 
-    return {
+    result = {
         "alpha": round(alpha, 4),
         "beta": round(beta, 4),
         "gamma": round(gamma, 4),
@@ -128,6 +134,76 @@ def compute_weights(
         "role_change_active": role_change is not None,
         "role_change_entry_id": role_change.id if role_change else None,
         "rationale": rationale,
+    }
+    result["cohort_model"] = cohort_metadata or {
+        "signal_source": "learned:kmeans_behavior_cluster",
+        "cluster_id": None,
+    }
+    return result
+
+
+def compute_behavioral_cluster(
+    db: Session, actor_id: int, as_of: datetime
+) -> dict[str, Any]:
+    """Assign an entity to a deterministic k-means behavior cohort."""
+    assignment_as_of = as_of - timedelta(days=CLUSTER_EXCLUSION_DAYS)
+    target = db.query(Entity).filter(Entity.id == actor_id).one()
+    actors = (
+        db.query(Entity)
+        .join(Event, Event.actor_id == Entity.id)
+        .filter(Event.timestamp <= assignment_as_of)
+        .distinct()
+        .order_by(Entity.id)
+        .all()
+    )
+    if not actors:
+        role_ids = [row.id for row in db.query(Entity).filter(Entity.role == target.role).all()]
+        return {"actor_ids": role_ids or [actor_id], "cluster_id": None, "cluster_count": 0,
+                "fallback": "role_group_insufficient_history",
+                "assignment_as_of": assignment_as_of.isoformat(),
+                "exclusion_days": CLUSTER_EXCLUSION_DAYS,
+                "signal_source": "learned:kmeans_behavior_cluster"}
+
+    vectors = []
+    ids = []
+    for candidate in actors:
+        primary = compute_feature_vector(db, candidate.id, as_of=assignment_as_of)["primary"]
+        vectors.append([float(primary.get(key, 0.0)) for key in FEATURE_KEYS])
+        ids.append(candidate.id)
+    matrix = np.asarray(vectors, dtype=float)
+    scaled = StandardScaler().fit_transform(matrix)
+    unique_count = len(np.unique(scaled, axis=0))
+    cluster_count = min(3, max(1, len(ids) // MIN_COHORT_SIZE), unique_count)
+    if cluster_count == 1:
+        labels = np.zeros(len(ids), dtype=int)
+    else:
+        labels = KMeans(
+            n_clusters=cluster_count, random_state=20260915, n_init=10
+        ).fit_predict(scaled)
+    if actor_id not in ids:
+        role_ids = [row.id for row in db.query(Entity).filter(Entity.role == target.role).all()]
+        return {"actor_ids": role_ids or [actor_id], "cluster_id": None,
+                "cluster_count": cluster_count, "fallback": "role_group_new_entity",
+                "assignment_as_of": assignment_as_of.isoformat(),
+                "exclusion_days": CLUSTER_EXCLUSION_DAYS,
+                "signal_source": "learned:kmeans_behavior_cluster"}
+    actor_index = ids.index(actor_id)
+    cluster_id = int(labels[actor_index])
+    members = [entity_id for entity_id, label in zip(ids, labels) if int(label) == cluster_id]
+
+    fallback = None
+    if len(members) < MIN_COHORT_SIZE:
+        members = [row.id for row in db.query(Entity).filter(Entity.role == target.role).all()]
+        fallback = "role_group_small_cluster"
+    return {
+        "actor_ids": members,
+        "cluster_id": cluster_id,
+        "cluster_count": cluster_count,
+        "signal_source": "learned:kmeans_behavior_cluster",
+        "feature_order": list(FEATURE_KEYS),
+        "fallback": fallback,
+        "assignment_as_of": assignment_as_of.isoformat(),
+        "exclusion_days": CLUSTER_EXCLUSION_DAYS,
     }
 
 
@@ -189,11 +265,12 @@ def compute_baseline_deviation(
     """
     as_of = _ensure_aware(as_of or datetime.now(timezone.utc))
     actor = db.query(Entity).filter(Entity.id == actor_id).one()
-    weights = compute_weights(db, actor, as_of)
-
-    cohort = db.query(Entity).filter(Entity.role == actor.role).all()
-    cohort_ids = [e.id for e in cohort]
+    cluster = compute_behavioral_cluster(db, actor_id, as_of)
+    cohort_ids = cluster["actor_ids"]
     peer_ids = [i for i in cohort_ids if i != actor_id]
+    weights = compute_weights(
+        db, actor, as_of, cohort_size=len(cohort_ids), cohort_metadata=cluster
+    )
 
     if features is None:
         features = compute_feature_vector(
@@ -209,7 +286,7 @@ def compute_baseline_deviation(
         sample_offsets_hours=[0, 24, 48, 72, 96, 120, 144, 168],
     )
 
-    # Role cohort baseline
+    # Learned behavioral-cluster cohort baseline
     cohort_dist = _feature_distribution_for_actors(
         db,
         cohort_ids,

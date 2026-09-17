@@ -1,41 +1,34 @@
-"""Module 6 — Evidence fusion.
+"""Module 6 — evidence-preserving constituent fusion.
 
-R_t = σ(w_s·S_t + w_p·P_t + w_q·Q_t + w_a·A_t + w_i·I_t − w_c·C_t)
-
-All inputs are live outputs of modules 2–5. Weights are named constants in config.py.
+Raw deviation is an equal-treatment noisy-OR over constituent change-point
+signals. Context is measured evidence coverage, never a subtractive score.
+Residual risk is exactly ``raw_deviation * (1 - context_coverage)``.
 """
 
 from __future__ import annotations
 
-import math
 from datetime import datetime, timezone
 from typing import Any, Optional
 
 from sqlalchemy.orm import Session
 
-from config import W_A, W_C, W_I, W_P, W_Q, W_S
 from engine.baseline import compute_baseline_deviation
+from engine.behavior import compute_login_risk
 from engine.context import evaluate_context_compatibility
+from engine.ml_signals import behavior_model_metadata, isolation_forest_signal
 from engine.narrative import assert_no_verdict_language, sanitize_narrative_list
 from models.db_models import ContextLedgerEntry, Event, Entity
 
 
-# Role sensitivity multipliers (identity risk)
-ROLE_SENSITIVITY = {
-    "security": 1.2,
-    "admin": 1.3,
-    "finance": 1.15,
-    "engineering": 1.0,
-    "hr": 1.05,
-    "contractor": 1.1,
-}
-
 CLASSIFICATION_SCORE = {
-    "public": 0.1,
-    "internal": 0.35,
-    "restricted": 0.7,
+    "public": 0.25,
+    "internal": 0.5,
+    "restricted": 0.75,
     "critical": 1.0,
 }
+
+CRITICAL_EVENT_FLOOR = 0.25
+BULK_DOWNLOAD_THRESHOLD = 1000
 
 
 def _ensure_aware(dt: datetime) -> datetime:
@@ -65,6 +58,7 @@ def _assessment_metadata(
         .filter(
             ContextLedgerEntry.actor_id == actor_id,
             ContextLedgerEntry.valid_from <= as_of,
+            ContextLedgerEntry.approval_state == "approved",
         )
         .count()
     )
@@ -78,16 +72,10 @@ def _assessment_metadata(
     return confidence, data_quality
 
 
-def _norm01(x: float, scale: float = 2.0) -> float:
-    """Squash non-negative signals into ~[0, 1] so fusion doesn't saturate."""
-    x = max(0.0, float(x))
-    return 1.0 - math.exp(-x / max(scale, 1e-6))
-
-
-def sigmoid_bound(x: float, midpoint: float = 0.35, steepness: float = 6.0) -> float:
-    """Map a ~[0,1]-ish linear combo to 0–100 via logistic."""
-    s = 1.0 / (1.0 + math.exp(-steepness * (x - midpoint)))
-    return max(0.0, min(100.0, s * 100.0))
+def _norm01(x: float) -> float:
+    """Map a non-negative magnitude monotonically without a tuned scale."""
+    value = max(0.0, float(x))
+    return value / (1.0 + value)
 
 
 def compute_asset_sensitivity(events: list[Event]) -> float:
@@ -95,7 +83,7 @@ def compute_asset_sensitivity(events: list[Event]) -> float:
     if not events:
         return 0.0
     scores = [
-        CLASSIFICATION_SCORE.get(e.resource_classification or "internal", 0.35)
+        CLASSIFICATION_SCORE.get(e.resource_classification or "internal", 0.5)
         for e in events
     ]
     for e in events:
@@ -108,14 +96,161 @@ def compute_asset_sensitivity(events: list[Event]) -> float:
 def compute_identity_risk(features: dict[str, Any], role: str) -> float:
     priv = float(features.get("privilege_change_count", 0.0))
     priv_norm = min(priv / 2.0, 1.0)
-    role_mult = ROLE_SENSITIVITY.get(role.lower(), 1.0)
-    return min(priv_norm * role_mult, 1.5)
+    # Job title is not a risk multiplier; identity risk reflects observed
+    # privilege-change behavior only.
+    return priv_norm
 
 
 def compute_sequence_risk(features: dict[str, Any]) -> float:
     flag = float(features.get("suspicious_sequence_flag", 0.0))
     mag = float(features.get("suspicious_sequence_magnitude", 0.0))
     return flag * max(mag, 0.3) if flag else 0.0
+
+
+def _noisy_or(values: list[float]) -> float:
+    complement = 1.0
+    for value in values:
+        complement *= 1.0 - max(0.0, min(1.0, float(value)))
+    return 1.0 - complement
+
+
+def critical_event_reasons(event: Event) -> list[str]:
+    reasons = []
+    if event.action == "privilege_change":
+        reasons.append("privilege_escalation")
+    if event.action == "external_upload":
+        reasons.append("external_upload")
+        if event.destination and not event.destination.lower().startswith(
+            ("s3://corp-", "https://corp.", "https://internal.")
+        ):
+            reasons.append("external_destination")
+    if event.action == "file_download" and (event.volume or 0) >= BULK_DOWNLOAD_THRESHOLD:
+        reasons.append("bulk_download")
+    return reasons
+
+
+def combine_signal_categories(categories: dict[str, dict[str, Any]]) -> float:
+    """Use max within correlated categories and noisy-OR across categories."""
+    category_values = []
+    for category in categories.values():
+        signals = category.get("signals", {})
+        combined = max((float(value) for value in signals.values()), default=0.0)
+        category["combined"] = round(max(0.0, min(1.0, combined)), 4)
+        category_values.append(category["combined"])
+    return round(_noisy_or(category_values), 4)
+
+
+def event_category_risk(
+    event: Event, features: dict[str, Any], *, S_t: float, P_t: float, Q_t: float,
+    I_t: float, M_t: float, L_t: float,
+) -> tuple[float, dict[str, Any]]:
+    """Build auditable, decorrelated categories for one event."""
+    is_resource = event.action in {"file_access", "repo_access", "file_download", "external_upload"}
+    is_sequence = event.action in {"privilege_change", "file_access", "repo_access", "file_download", "external_upload"}
+    resource_sensitivity = CLASSIFICATION_SCORE.get(
+        event.resource_classification or "public", 0.25
+    ) if is_resource else 0.0
+    movement = 0.0
+    if event.action == "external_upload":
+        movement = 1.0
+    elif event.action == "file_download":
+        movement = min(max(float(event.volume or 0) / BULK_DOWNLOAD_THRESHOLD, 0.0), 1.0)
+
+    categories = {
+        "identity": {
+            "signals": {
+                "behavior_anomaly_model": M_t,
+                "login_risk": L_t if event.action == "login" else 0.0,
+            },
+            "raw_fields": {
+                "new_device_count": features.get("new_device_count", 0.0),
+                "geo_velocity_risk": features.get("geo_velocity_risk", 0.0),
+                "failed_login_burst": features.get("failed_login_burst", 0.0),
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+        },
+        "resource_access": {
+            "signals": {
+                "asset_sensitivity": resource_sensitivity,
+                "personal_deviation": _norm01(S_t) if is_resource else 0.0,
+                "cluster_deviation": _norm01(P_t) if is_resource else 0.0,
+            },
+            "raw_fields": {
+                "action": event.action,
+                "resource_classification": event.resource_classification,
+                "new_resource_count": features.get("new_resource_count", 0.0),
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+        },
+        "privilege": {
+            "signals": {
+                "observed_privilege_change": 1.0 if event.action == "privilege_change" else 0.0,
+                "identity_privilege_signal": I_t if event.action == "privilege_change" else 0.0,
+            },
+            "raw_fields": {"privilege_change_count": features.get("privilege_change_count", 0.0)},
+            "signal_source": "rule_based",
+        },
+        "data_movement": {
+            "signals": {"event_movement": movement},
+            "raw_fields": {
+                "volume": event.volume,
+                "external_destination_novelty": features.get("external_destination_novelty", 0.0),
+            },
+            "signal_source": "rule_based",
+        },
+        "temporal_sequence": {
+            "signals": {"sequence_strength": Q_t if is_sequence else 0.0},
+            "raw_fields": {
+                "suspicious_sequence_flag": features.get("suspicious_sequence_flag", 0.0),
+                "suspicious_sequence_magnitude": features.get("suspicious_sequence_magnitude", 0.0),
+            },
+            "signal_source": "rule_based",
+        },
+    }
+    return combine_signal_categories(categories), categories
+
+
+def fuse_event_residuals(
+    event_inputs: list[dict[str, Any]], *, critical_floor: float = CRITICAL_EVENT_FLOOR
+) -> dict[str, Any]:
+    """Fuse event-level raw risk and context credit into case-level values."""
+    rows = []
+    raw_values = []
+    residual_values = []
+    weighted_credit = 0.0
+    raw_total = 0.0
+    for item in event_inputs:
+        raw = max(0.0, min(1.0, float(item["raw_risk"])))
+        credit = max(0.0, min(1.0, float(item["context_credit"])))
+        before_floor = raw * (1.0 - credit)
+        floor = critical_floor if item.get("critical_reasons") else 0.0
+        residual = max(before_floor, floor)
+        raw_values.append(raw)
+        residual_values.append(residual)
+        raw_total += raw
+        weighted_credit += raw * credit
+        rows.append({
+            "event_id": int(item["event_id"]),
+            "raw_risk": round(raw * 100.0, 4),
+            "context_credit": round(credit, 4),
+            "residual_before_floor": round(before_floor * 100.0, 4),
+            "critical_floor": round(floor * 100.0, 4),
+            "critical_reasons": list(item.get("critical_reasons") or []),
+            "residual_contribution": round(residual * 100.0, 4),
+            "categories": item.get("categories", {}),
+        })
+    raw_case = _noisy_or(raw_values)
+    residual_case = _noisy_or(residual_values)
+    coverage = weighted_credit / raw_total if raw_total > 0 else 0.0
+    for index, row in enumerate(rows):
+        without = _noisy_or(residual_values[:index] + residual_values[index + 1:])
+        row["marginal_case_contribution"] = round((residual_case - without) * 100.0, 4)
+    return {
+        "raw_deviation": round(raw_case * 100.0, 4),
+        "context_coverage": round(coverage, 4),
+        "residual_risk": round(residual_case * 100.0, 4),
+        "event_risk_breakdown": rows,
+    }
 
 
 def fuse(
@@ -126,42 +261,46 @@ def fuse(
     I_t: float,
     C_t: float,
     force_C_zero: bool = False,
-) -> dict[str, float]:
+    M_t: float = 0.0,
+    L_t: float = 0.0,
+) -> dict[str, Any]:
     """
-    Real arithmetic on module outputs.
-    Returns raw_deviation (C=0), residual_risk (with C), context_coverage.
+    Combine constituents symmetrically, then apply observed evidence coverage.
+
+    No manually selected component weights or sigmoid are involved. A fully
+    covered assessment has residual risk exactly zero while retaining raw risk.
     """
     # Normalize magnitude features; A/Q/C already roughly [0,1]
-    s = _norm01(S_t, scale=1.5)
-    p = _norm01(P_t, scale=1.5)
+    s = _norm01(S_t)
+    p = _norm01(P_t)
     q = max(0.0, min(1.0, Q_t))
     a = max(0.0, min(1.0, A_t))
     i = max(0.0, min(1.0, I_t))
+    m = max(0.0, min(1.0, M_t))
+    login = max(0.0, min(1.0, L_t))
     c = 0.0 if force_C_zero else max(0.0, min(1.0, C_t))
 
-    linear_raw = W_S * s + W_P * p + W_Q * q + W_A * a + W_I * i
-    linear = linear_raw - W_C * c
-
-    raw = sigmoid_bound(linear_raw, midpoint=0.30, steepness=7.0)
-    residual = sigmoid_bound(linear, midpoint=0.30, steepness=7.0)
-
-    if raw <= 1e-9:
-        coverage = 1.0 if c >= 0.99 else 0.0
-    else:
-        coverage = max(0.0, min(1.0, (raw - residual) / raw))
+    constituents = (s, p, q, a, i, m, login)
+    raw_probability = 1.0
+    for signal in constituents:
+        raw_probability *= 1.0 - signal
+    raw = round(100.0 * (1.0 - raw_probability), 4)
+    coverage = c
+    residual = round(raw * (1.0 - coverage), 4)
 
     return {
-        "raw_deviation": round(raw, 4),
-        "residual_risk": round(residual, 4),
+        "raw_deviation": raw,
+        "residual_risk": residual,
         "context_coverage": round(coverage, 4),
-        "linear_score": round(linear, 4),
-        "linear_raw": round(linear_raw, 4),
+        "fusion_method": "unweighted_noisy_or_then_evidence_coverage",
         "C_t_used": c,
         "S_t_norm": round(s, 4),
         "P_t_norm": round(p, 4),
         "Q_t_norm": round(q, 4),
         "A_t_norm": round(a, 4),
         "I_t_norm": round(i, 4),
+        "M_t_norm": round(m, 4),
+        "L_t_norm": round(login, 4),
     }
 
 
@@ -196,14 +335,17 @@ def compute_risk_for_events(
     ctx = evaluate_context_compatibility(
         db, actor_id, scoped_events, as_of=effective_as_of
     )
-    indeterminate_ids = set(ctx["indeterminate_event_ids"])
-    risk_events = [e for e in scoped_events if e.id not in indeterminate_ids]
+    # Unknown evidence is not silently removed. It can contribute to raw risk
+    # and receives zero context credit until its data-quality issue is resolved.
+    risk_events = scoped_events
 
     S_t = overrides.get("S_t", baseline["S_t"])
     P_t = overrides.get("P_t", baseline["P_t"])
     Q_t = overrides.get("Q_t", compute_sequence_risk(features))
     A_t = overrides.get("A_t", compute_asset_sensitivity(risk_events))
     I_t = overrides.get("I_t", compute_identity_risk(features, actor.role))
+    M_t = overrides.get("M_t", isolation_forest_signal(features))
+    L_t = overrides.get("L_t", compute_login_risk(features))
 
     C_t = overrides.get("C_t", ctx["C_t"])
 
@@ -219,8 +361,29 @@ def compute_risk_for_events(
         P_t = 0.0
     if overrides.get("context") == 0.0:
         C_t = 0.0
+    if overrides.get("behavior_anomaly_model") == 0.0:
+        M_t = 0.0
+    if overrides.get("login_risk") == 0.0:
+        L_t = 0.0
 
-    fused = fuse(S_t, P_t, Q_t, A_t, I_t, C_t)
+    fused = fuse(S_t, P_t, Q_t, A_t, I_t, C_t, M_t=M_t, L_t=L_t)
+
+    context_by_event = {row["event_id"]: row for row in ctx["breakdown"]}
+    event_inputs = []
+    for event in scoped_events:
+        event_raw, categories = event_category_risk(
+            event, features, S_t=S_t, P_t=P_t, Q_t=Q_t, I_t=I_t,
+            M_t=M_t, L_t=L_t,
+        )
+        event_context = context_by_event.get(event.id, {})
+        event_inputs.append({
+            "event_id": event.id,
+            "raw_risk": event_raw,
+            "context_credit": float(event_context.get("best_score", 0.0)),
+            "critical_reasons": critical_event_reasons(event),
+            "categories": categories,
+        })
+    event_fused = fuse_event_residuals(event_inputs)
 
     evidence = []
     if S_t > 0.5:
@@ -233,20 +396,26 @@ def compute_risk_for_events(
         evidence.append(f"High asset sensitivity in involved events (A_t={A_t:.2f})")
     if I_t > 0.3:
         evidence.append(f"Identity/privilege risk signal (I_t={I_t:.2f})")
+    if M_t > 0.0:
+        evidence.append(f"Offline anomaly-model constituent (M_t={M_t:.2f})")
+    if L_t > 0.0:
+        evidence.append(f"Login-risk constituent (L_t={L_t:.2f})")
     if C_t > 0.0:
         evidence.append(
             f"Context explains {ctx['counts']['explained']}/{ctx['counts']['total']} "
-            f"events (C_t={C_t:.2f})"
+            f"events (risk-weighted coverage={event_fused['context_coverage']:.2f})"
         )
     for ub in ctx["unmatched_behavior"][:5]:
         evidence.append(f"Unmatched: {ub}")
 
     contributors = {
-        "self-baseline deviation": W_S * fused["S_t_norm"],
-        "peer-cohort deviation": W_P * fused["P_t_norm"],
-        "observed access sequence": W_Q * fused["Q_t_norm"],
-        "asset sensitivity": W_A * fused["A_t_norm"],
-        "identity/privilege risk": W_I * fused["I_t_norm"],
+        "self-baseline deviation": fused["S_t_norm"],
+        "peer-cohort deviation": fused["P_t_norm"],
+        "observed access sequence": fused["Q_t_norm"],
+        "asset sensitivity": fused["A_t_norm"],
+        "identity/privilege risk": fused["I_t_norm"],
+        "offline behavior anomaly": fused["M_t_norm"],
+        "login risk": fused["L_t_norm"],
     }
     primary_cause = assert_no_verdict_language(max(contributors, key=contributors.get))
     evidence = sanitize_narrative_list(evidence)
@@ -256,9 +425,10 @@ def compute_risk_for_events(
     )
 
     return {
-        "raw_deviation": fused["raw_deviation"],
-        "context_coverage": fused["context_coverage"],
-        "residual_risk": fused["residual_risk"],
+        "raw_deviation": event_fused["raw_deviation"],
+        "context_coverage": event_fused["context_coverage"],
+        "residual_risk": event_fused["residual_risk"],
+        "event_risk_breakdown": event_fused["event_risk_breakdown"],
         "confidence": confidence,
         "data_quality": data_quality,
         "residual_unresolved_count": ctx["residual_unresolved_count"],
@@ -275,15 +445,22 @@ def compute_risk_for_events(
             "Q_t": round(Q_t, 4),
             "A_t": round(A_t, 4),
             "I_t": round(I_t, 4),
-            "C_t": round(C_t, 4),
-            "W_S": W_S,
-            "W_P": W_P,
-            "W_Q": W_Q,
-            "W_A": W_A,
-            "W_I": W_I,
-            "W_C": W_C,
-            "linear_score": fused["linear_score"],
-            "linear_raw": fused["linear_raw"],
+            "M_t": round(M_t, 4),
+            "L_t": round(L_t, 4),
+            "C_t": event_fused["context_coverage"],
+            "coverage_method": "constituent_event_evidence_coverage",
+            "fusion_method": fused["fusion_method"],
+            "signal_sources": {
+                "S_t": "rule_based:personal_baseline_deviation",
+                "P_t": "learned:kmeans_cohort_deviation",
+                "Q_t": "rule_based:sequence_detection",
+                "A_t": "rule_based:asset_classification",
+                "I_t": "rule_based:observed_privilege_change",
+                "M_t": behavior_model_metadata()["signal_source"],
+                "L_t": "rule_based:login_geo_device_failure",
+                "C_t": "rule_based:approved_context_coverage",
+            },
+            "behavior_model": behavior_model_metadata(),
         },
         "baseline": baseline,
         "context": ctx,
@@ -311,6 +488,8 @@ def counterfactual_breakdown(
         ("self_deviation", "Self-baseline deviation (S_t) zeroed"),
         ("peer_deviation", "Peer/cohort deviation (P_t) zeroed"),
         ("context", "Context credit (C_t) zeroed — equivalent to raw path"),
+        ("behavior_anomaly_model", "Offline Isolation Forest signal (M_t) zeroed"),
+        ("login_risk", "Login-risk signal (L_t) zeroed"),
     ]
 
     results = []

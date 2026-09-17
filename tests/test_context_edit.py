@@ -1,5 +1,5 @@
 """
-Verification: edit Arjun's context ledger and assert residual_risk decreases.
+Verification: approve an immutable successor context revision and reassess.
 
 Run:
   python -m tests.test_context_edit
@@ -43,7 +43,7 @@ def main() -> None:
         case = recompute_case(db, case)
         before = case.residual_risk
         before_cov = case.context_coverage
-        print(f"BEFORE edit: residual_risk={before:.4f} context_coverage={before_cov:.4f}")
+        print(f"BEFORE revision: residual_risk={before:.4f} context_coverage={before_cov:.4f}")
 
         breakdown = case.explanation_breakdown or []
         statuses = {b["resource_id"]: b["status"] for b in breakdown if b.get("resource_id")}
@@ -62,7 +62,7 @@ def main() -> None:
         ), "finance-archive should be unexplained"
         assert explained and unexplained, "Expected both explained and unexplained events"
 
-        # Edit context: add finance-archive to allowed_resources
+        # Create an immutable approved successor; never edit the original content.
         entry = (
             db.query(ContextLedgerEntry)
             .filter(ContextLedgerEntry.actor_id == arjun.id)
@@ -72,23 +72,36 @@ def main() -> None:
         resources = list(entry.allowed_resources or [])
         if "finance-archive" not in resources:
             resources.append("finance-archive")
-        entry.allowed_resources = resources
         # Also allow the external destination to further increase coverage
         dests = list(entry.approved_destinations or [])
         if "https://personal-cloud.example/upload" not in dests:
             dests.append("https://personal-cloud.example/upload")
-        entry.approved_destinations = dests
         # Allow external_upload action
         actions = list(entry.allowed_actions or [])
         if "external_upload" not in actions:
             actions.append("external_upload")
-        entry.allowed_actions = actions
+        successor = ContextLedgerEntry(
+            actor_id=entry.actor_id,
+            reason=entry.reason,
+            valid_from=entry.valid_from,
+            valid_until=entry.valid_until,
+            allowed_resources=resources,
+            allowed_actions=actions,
+            approved_destinations=dests,
+            approved_by="test-approver",
+            approval_state="approved",
+            supersedes_id=entry.id,
+            proposed_by="test-proposer",
+            reviewed_by="test-approver",
+        )
+        entry.approval_state = "superseded"
+        db.add(successor)
         db.commit()
 
         case = recompute_case(db, case)
         after = case.residual_risk
         after_cov = case.context_coverage
-        print(f"AFTER edit:  residual_risk={after:.4f} context_coverage={after_cov:.4f}")
+        print(f"AFTER approval: residual_risk={after:.4f} context_coverage={after_cov:.4f}")
 
         breakdown2 = case.explanation_breakdown or []
         print("  updated breakdown:")
@@ -103,7 +116,7 @@ def main() -> None:
             f"(before={before}, after={after})"
         )
         assert after_cov >= before_cov, "context_coverage should not decrease"
-        print("PASS: residual_risk decreased after ContextLedgerEntry edit.")
+        print("PASS: residual_risk decreased after immutable revision approval.")
 
         # Also sanity-check Priya low / Devraj high / Arjun mid
         priya = db.query(Entity).filter(Entity.display_name == "Priya").one()

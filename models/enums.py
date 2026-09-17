@@ -70,3 +70,27 @@ class ExplanationStatus(str, Enum):
     partially_explained = "partially_explained"
     unexplained = "unexplained"
     indeterminate = "indeterminate"
+
+
+class ResponseActionType(str, Enum):
+    observe = "observe"
+    step_up_auth = "step_up_auth"
+    block_external_upload = "block_external_upload"
+    freeze_privilege_change = "freeze_privilege_change"
+    rate_limit_download = "rate_limit_download"
+    revoke_session = "revoke_session"
+    isolate_device = "isolate_device"
+    disable_account = "disable_account"
+
+
+class ResponseActionStatus(str, Enum):
+    proposed = "proposed"
+    auto_authorized = "auto_authorized"
+    awaiting_approval = "awaiting_approval"
+    approved = "approved"
+    executing = "executing"
+    active = "active"
+    expired = "expired"
+    rolled_back = "rolled_back"
+    failed = "failed"
+    rejected = "rejected"

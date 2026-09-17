@@ -1,0 +1,3085 @@
+{
+  "actor_ref": "ent_e475f641a248714f",
+  "baseline_weights": {
+    "alpha": 0.65,
+    "beta": 0.25,
+    "cohort_confidence": "high",
+    "cohort_model": {
+      "actor_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "assignment_as_of": "2026-08-21T05:00:00+00:00",
+      "cluster_count": 1,
+      "cluster_id": 0,
+      "exclusion_days": 7,
+      "fallback": null,
+      "feature_order": [
+        "login_hour_irregularity",
+        "new_device_count",
+        "new_resource_count",
+        "sensitive_access_ratio",
+        "download_volume_vs_baseline",
+        "privilege_change_count",
+        "external_destination_novelty",
+        "suspicious_sequence_flag",
+        "suspicious_sequence_magnitude"
+      ],
+      "signal_source": "learned:kmeans_behavior_cluster"
+    },
+    "cohort_size": 12,
+    "gamma": 0.1,
+    "history_days": 26.83,
+    "rationale": "Established entity, no recent role change: personal \u03b1 high",
+    "role_change_active": false,
+    "role_change_entry_id": null,
+    "uncertainty_band": 1.0
+  },
+  "change_point_timestamps": [
+    "2026-08-27T18:00:00+00:00"
+  ],
+  "confidence": "high",
+  "context_coverage": 0.5905,
+  "created_at": "2026-08-28T05:00:00",
+  "current_assessment": {
+    "baseline_weights": {
+      "alpha": 0.65,
+      "beta": 0.25,
+      "cohort_confidence": "high",
+      "cohort_model": {
+        "actor_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "assignment_as_of": "2026-08-21T05:00:00+00:00",
+        "cluster_count": 1,
+        "cluster_id": 0,
+        "exclusion_days": 7,
+        "fallback": null,
+        "feature_order": [
+          "login_hour_irregularity",
+          "new_device_count",
+          "new_resource_count",
+          "sensitive_access_ratio",
+          "download_volume_vs_baseline",
+          "privilege_change_count",
+          "external_destination_novelty",
+          "suspicious_sequence_flag",
+          "suspicious_sequence_magnitude"
+        ],
+        "signal_source": "learned:kmeans_behavior_cluster"
+      },
+      "cohort_size": 12,
+      "gamma": 0.1,
+      "history_days": 26.83,
+      "rationale": "Established entity, no recent role change: personal \u03b1 high",
+      "role_change_active": false,
+      "role_change_entry_id": null,
+      "uncertainty_band": 1.0
+    },
+    "confidence": "high",
+    "context_coverage": 0.5905,
+    "context_entry_ids": [
+      2,
+      4
+    ],
+    "created_at": "2026-09-16T15:19:19.285712",
+    "data_quality": "sufficient",
+    "event_risk_breakdown": [
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.0,
+            "raw_fields": {
+              "action": "login",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.0,
+              "cluster_deviation": 0.0,
+              "personal_deviation": 0.0
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 978,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 41.24,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "repo_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 979,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 97.3,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "repo_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 980,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 97.3,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.8,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": 800
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.8
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "file_download",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 981,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 99.46,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "file_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 982,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 97.3,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 1.0,
+            "raw_fields": {
+              "action": "file_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "critical"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 1.0,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 0.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 983,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 100.0,
+        "residual_before_floor": 100.0,
+        "residual_contribution": 100.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 1.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": 2000
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 1.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 1.0,
+            "raw_fields": {
+              "action": "file_download",
+              "new_resource_count": 2.0,
+              "resource_classification": "critical"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 1.0,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 0.0,
+        "critical_floor": 25.0,
+        "critical_reasons": [
+          "bulk_download"
+        ],
+        "event_id": 984,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 100.0,
+        "residual_before_floor": 100.0,
+        "residual_contribution": 100.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 1.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": 2000
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 1.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 1.0,
+            "raw_fields": {
+              "action": "external_upload",
+              "new_resource_count": 2.0,
+              "resource_classification": "critical"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 1.0,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 0.0,
+        "critical_floor": 25.0,
+        "critical_reasons": [
+          "external_upload",
+          "external_destination"
+        ],
+        "event_id": 985,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 100.0,
+        "residual_before_floor": 100.0,
+        "residual_contribution": 100.0
+      }
+    ],
+    "evidence": [
+      "Self-baseline deviation elevated (S_t=16.33)",
+      "Peer/cohort deviation elevated (P_t=20.74)",
+      "High asset sensitivity in involved events (A_t=0.88)",
+      "Offline anomaly-model constituent (M_t=0.41)",
+      "Context explains 5/8 events (risk-weighted coverage=0.59)",
+      "Unmatched: file_access on finance-archive at 2026-08-27T15:00:00+00:00",
+      "Unmatched: file_download on finance-archive at 2026-08-27T16:00:00+00:00",
+      "Unmatched: external_upload on finance-archive at 2026-08-27T17:00:00+00:00"
+    ],
+    "explanation_breakdown": [
+      {
+        "action": "login",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 978,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "action"
+          ],
+          "resource_match": null,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2,
+          4
+        ],
+        "resource_id": null,
+        "status": "explained",
+        "timestamp": "2026-08-27T09:00:00+00:00"
+      },
+      {
+        "action": "repo_access",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 979,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2,
+          4
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T10:00:00+00:00"
+      },
+      {
+        "action": "repo_access",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 980,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2,
+          4
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T11:00:00+00:00"
+      },
+      {
+        "action": "file_download",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 981,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2,
+          4
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T12:00:00+00:00"
+      },
+      {
+        "action": "file_access",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 982,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2,
+          4
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T13:00:00+00:00"
+      },
+      {
+        "action": "file_access",
+        "best_score": 0.0,
+        "destination": null,
+        "event_id": 983,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "action"
+          ],
+          "resource_match": false,
+          "score": 0.0,
+          "status": "unexplained",
+          "time_match": true
+        },
+        "matched_context_ids": [],
+        "resource_id": "finance-archive",
+        "status": "unexplained",
+        "timestamp": "2026-08-27T15:00:00+00:00"
+      },
+      {
+        "action": "file_download",
+        "best_score": 0.0,
+        "destination": null,
+        "event_id": 984,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "action"
+          ],
+          "resource_match": false,
+          "score": 0.0,
+          "status": "unexplained",
+          "time_match": true
+        },
+        "matched_context_ids": [],
+        "resource_id": "finance-archive",
+        "status": "unexplained",
+        "timestamp": "2026-08-27T16:00:00+00:00"
+      },
+      {
+        "action": "external_upload",
+        "best_score": 0.0,
+        "destination": "https://personal-cloud.example/upload",
+        "event_id": 985,
+        "match_details": {
+          "action_match": false,
+          "applicable": [
+            "time",
+            "resource",
+            "action",
+            "destination"
+          ],
+          "destination_match": false,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time"
+          ],
+          "resource_match": false,
+          "score": 0.0,
+          "status": "unexplained",
+          "time_match": true
+        },
+        "matched_context_ids": [],
+        "resource_id": "finance-archive",
+        "status": "unexplained",
+        "timestamp": "2026-08-27T17:00:00+00:00"
+      }
+    ],
+    "feature_snapshot": {
+      "as_of": "2026-08-28T05:00:00+00:00",
+      "primary": {
+        "download_volume_vs_baseline": 328.4507042253521,
+        "event_count": 8.0,
+        "external_destination_novelty": 1.0,
+        "failed_login_burst": 0.0,
+        "geo_velocity_risk": 0.0,
+        "login_device_novelty": 0.0,
+        "login_hour_irregularity": 0.0,
+        "new_device_count": 0.0,
+        "new_resource_count": 2.0,
+        "privilege_change_count": 0.0,
+        "sensitive_access_ratio": 0.375,
+        "suspicious_sequence_flag": 0.0,
+        "suspicious_sequence_magnitude": 0.0
+      },
+      "windows": {
+        "15m": {
+          "download_volume_vs_baseline": 0.0,
+          "event_count": 0.0,
+          "external_destination_novelty": 0.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 0.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 0.0,
+          "new_resource_count": 0.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.0,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        },
+        "24h": {
+          "download_volume_vs_baseline": 328.4507042253521,
+          "event_count": 8.0,
+          "external_destination_novelty": 1.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 0.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 0.0,
+          "new_resource_count": 2.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.375,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        },
+        "30d": {
+          "download_volume_vs_baseline": 5155.0,
+          "event_count": 91.0,
+          "external_destination_novelty": 1.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 1.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 1.0,
+          "new_resource_count": 4.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.03296703296703297,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        },
+        "7d": {
+          "download_volume_vs_baseline": 51.26892857142857,
+          "event_count": 26.0,
+          "external_destination_novelty": 1.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 0.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 0.0,
+          "new_resource_count": 2.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.11538461538461539,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        }
+      }
+    },
+    "fusion_components": {
+      "A_t": 0.875,
+      "C_t": 0.5905,
+      "I_t": 0.0,
+      "L_t": 0.0,
+      "M_t": 0.4124,
+      "P_t": 20.7357,
+      "Q_t": 0.0,
+      "S_t": 16.3342,
+      "behavior_model": {
+        "model_type": "IsolationForest",
+        "signal_source": "learned:offline_isolation_forest",
+        "training_seed": 20260915,
+        "training_source": "synthetic_behavior_vectors_v1"
+      },
+      "coverage_method": "constituent_event_evidence_coverage",
+      "fusion_method": "unweighted_noisy_or_then_evidence_coverage",
+      "signal_sources": {
+        "A_t": "rule_based:asset_classification",
+        "C_t": "rule_based:approved_context_coverage",
+        "I_t": "rule_based:observed_privilege_change",
+        "L_t": "rule_based:login_geo_device_failure",
+        "M_t": "learned:offline_isolation_forest",
+        "P_t": "learned:kmeans_cohort_deviation",
+        "Q_t": "rule_based:sequence_detection",
+        "S_t": "rule_based:personal_baseline_deviation"
+      }
+    },
+    "id": 10,
+    "input_event_ids": [
+      978,
+      979,
+      980,
+      981,
+      982,
+      983,
+      984,
+      985
+    ],
+    "matched_context_ids": [
+      2,
+      4
+    ],
+    "primary_cause": "peer-cohort deviation",
+    "raw_deviation": 100.0,
+    "residual_risk": 100.0,
+    "residual_unresolved_count": 0,
+    "trigger": "seed_late_context_correction",
+    "unmatched_behavior": [
+      "file_access on finance-archive at 2026-08-27T15:00:00+00:00",
+      "file_download on finance-archive at 2026-08-27T16:00:00+00:00",
+      "external_upload on finance-archive at 2026-08-27T17:00:00+00:00"
+    ]
+  },
+  "data_quality": "sufficient",
+  "event_ids": [
+    978,
+    979,
+    980,
+    981,
+    982,
+    983,
+    984,
+    985
+  ],
+  "event_risk_breakdown": [
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 0.0,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": null
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 0.0
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 0.0,
+          "raw_fields": {
+            "action": "login",
+            "new_resource_count": 2.0,
+            "resource_classification": "internal"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 0.0,
+            "cluster_deviation": 0.0,
+            "personal_deviation": 0.0
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 1.0,
+      "critical_floor": 0.0,
+      "critical_reasons": [],
+      "event_id": 978,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 41.24,
+      "residual_before_floor": 0.0,
+      "residual_contribution": 0.0
+    },
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 0.0,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": null
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 0.0
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 0.954,
+          "raw_fields": {
+            "action": "repo_access",
+            "new_resource_count": 2.0,
+            "resource_classification": "internal"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 0.5,
+            "cluster_deviation": 0.9539927400543806,
+            "personal_deviation": 0.9423105767788533
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 1.0,
+      "critical_floor": 0.0,
+      "critical_reasons": [],
+      "event_id": 979,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 97.3,
+      "residual_before_floor": 0.0,
+      "residual_contribution": 0.0
+    },
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 0.0,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": null
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 0.0
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 0.954,
+          "raw_fields": {
+            "action": "repo_access",
+            "new_resource_count": 2.0,
+            "resource_classification": "internal"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 0.5,
+            "cluster_deviation": 0.9539927400543806,
+            "personal_deviation": 0.9423105767788533
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 1.0,
+      "critical_floor": 0.0,
+      "critical_reasons": [],
+      "event_id": 980,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 97.3,
+      "residual_before_floor": 0.0,
+      "residual_contribution": 0.0
+    },
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 0.8,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": 800
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 0.8
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 0.954,
+          "raw_fields": {
+            "action": "file_download",
+            "new_resource_count": 2.0,
+            "resource_classification": "internal"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 0.5,
+            "cluster_deviation": 0.9539927400543806,
+            "personal_deviation": 0.9423105767788533
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 1.0,
+      "critical_floor": 0.0,
+      "critical_reasons": [],
+      "event_id": 981,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 99.46,
+      "residual_before_floor": 0.0,
+      "residual_contribution": 0.0
+    },
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 0.0,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": null
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 0.0
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 0.954,
+          "raw_fields": {
+            "action": "file_access",
+            "new_resource_count": 2.0,
+            "resource_classification": "internal"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 0.5,
+            "cluster_deviation": 0.9539927400543806,
+            "personal_deviation": 0.9423105767788533
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 1.0,
+      "critical_floor": 0.0,
+      "critical_reasons": [],
+      "event_id": 982,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 97.3,
+      "residual_before_floor": 0.0,
+      "residual_contribution": 0.0
+    },
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 0.0,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": null
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 0.0
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 1.0,
+          "raw_fields": {
+            "action": "file_access",
+            "new_resource_count": 2.0,
+            "resource_classification": "critical"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 1.0,
+            "cluster_deviation": 0.9539927400543806,
+            "personal_deviation": 0.9423105767788533
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 0.0,
+      "critical_floor": 0.0,
+      "critical_reasons": [],
+      "event_id": 983,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 100.0,
+      "residual_before_floor": 100.0,
+      "residual_contribution": 100.0
+    },
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 1.0,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": 2000
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 1.0
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 1.0,
+          "raw_fields": {
+            "action": "file_download",
+            "new_resource_count": 2.0,
+            "resource_classification": "critical"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 1.0,
+            "cluster_deviation": 0.9539927400543806,
+            "personal_deviation": 0.9423105767788533
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 0.0,
+      "critical_floor": 25.0,
+      "critical_reasons": [
+        "bulk_download"
+      ],
+      "event_id": 984,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 100.0,
+      "residual_before_floor": 100.0,
+      "residual_contribution": 100.0
+    },
+    {
+      "categories": {
+        "data_movement": {
+          "combined": 1.0,
+          "raw_fields": {
+            "external_destination_novelty": 1.0,
+            "volume": 2000
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "event_movement": 1.0
+          }
+        },
+        "identity": {
+          "combined": 0.4124,
+          "raw_fields": {
+            "failed_login_burst": 0.0,
+            "geo_velocity_risk": 0.0,
+            "new_device_count": 0.0
+          },
+          "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+          "signals": {
+            "behavior_anomaly_model": 0.4124,
+            "login_risk": 0.0
+          }
+        },
+        "privilege": {
+          "combined": 0.0,
+          "raw_fields": {
+            "privilege_change_count": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "identity_privilege_signal": 0.0,
+            "observed_privilege_change": 0.0
+          }
+        },
+        "resource_access": {
+          "combined": 1.0,
+          "raw_fields": {
+            "action": "external_upload",
+            "new_resource_count": 2.0,
+            "resource_classification": "critical"
+          },
+          "signal_source": "mixed:rules_and_kmeans_baseline",
+          "signals": {
+            "asset_sensitivity": 1.0,
+            "cluster_deviation": 0.9539927400543806,
+            "personal_deviation": 0.9423105767788533
+          }
+        },
+        "temporal_sequence": {
+          "combined": 0.0,
+          "raw_fields": {
+            "suspicious_sequence_flag": 0.0,
+            "suspicious_sequence_magnitude": 0.0
+          },
+          "signal_source": "rule_based",
+          "signals": {
+            "sequence_strength": 0.0
+          }
+        }
+      },
+      "context_credit": 0.0,
+      "critical_floor": 25.0,
+      "critical_reasons": [
+        "external_upload",
+        "external_destination"
+      ],
+      "event_id": 985,
+      "marginal_case_contribution": 0.0,
+      "raw_risk": 100.0,
+      "residual_before_floor": 100.0,
+      "residual_contribution": 100.0
+    }
+  ],
+  "evidence": [
+    "Self-baseline deviation elevated (S_t=16.33)",
+    "Peer/cohort deviation elevated (P_t=20.74)",
+    "High asset sensitivity in involved events (A_t=0.88)",
+    "Offline anomaly-model constituent (M_t=0.41)",
+    "Context explains 5/8 events (risk-weighted coverage=0.59)",
+    "Unmatched: file_access on finance-archive at 2026-08-27T15:00:00+00:00",
+    "Unmatched: file_download on finance-archive at 2026-08-27T16:00:00+00:00",
+    "Unmatched: external_upload on finance-archive at 2026-08-27T17:00:00+00:00"
+  ],
+  "explanation_breakdown": [
+    {
+      "action": "login",
+      "destination": null,
+      "event_id": 978,
+      "match_details": {
+        "action_match": true,
+        "applicable": [
+          "time",
+          "action"
+        ],
+        "destination_match": null,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time",
+          "action"
+        ],
+        "resource_match": null,
+        "score": 1.0,
+        "status": "explained",
+        "time_match": true
+      },
+      "matched_context_ids": [
+        2,
+        4
+      ],
+      "resource_id": null,
+      "status": "explained",
+      "timestamp": "2026-08-27T09:00:00Z"
+    },
+    {
+      "action": "repo_access",
+      "destination": null,
+      "event_id": 979,
+      "match_details": {
+        "action_match": true,
+        "applicable": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "destination_match": null,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "resource_match": true,
+        "score": 1.0,
+        "status": "explained",
+        "time_match": true
+      },
+      "matched_context_ids": [
+        2,
+        4
+      ],
+      "resource_id": "migration-repo",
+      "status": "explained",
+      "timestamp": "2026-08-27T10:00:00Z"
+    },
+    {
+      "action": "repo_access",
+      "destination": null,
+      "event_id": 980,
+      "match_details": {
+        "action_match": true,
+        "applicable": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "destination_match": null,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "resource_match": true,
+        "score": 1.0,
+        "status": "explained",
+        "time_match": true
+      },
+      "matched_context_ids": [
+        2,
+        4
+      ],
+      "resource_id": "migration-repo",
+      "status": "explained",
+      "timestamp": "2026-08-27T11:00:00Z"
+    },
+    {
+      "action": "file_download",
+      "destination": null,
+      "event_id": 981,
+      "match_details": {
+        "action_match": true,
+        "applicable": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "destination_match": null,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "resource_match": true,
+        "score": 1.0,
+        "status": "explained",
+        "time_match": true
+      },
+      "matched_context_ids": [
+        2,
+        4
+      ],
+      "resource_id": "migration-repo",
+      "status": "explained",
+      "timestamp": "2026-08-27T12:00:00Z"
+    },
+    {
+      "action": "file_access",
+      "destination": null,
+      "event_id": 982,
+      "match_details": {
+        "action_match": true,
+        "applicable": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "destination_match": null,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "resource_match": true,
+        "score": 1.0,
+        "status": "explained",
+        "time_match": true
+      },
+      "matched_context_ids": [
+        2,
+        4
+      ],
+      "resource_id": "migration-repo",
+      "status": "explained",
+      "timestamp": "2026-08-27T13:00:00Z"
+    },
+    {
+      "action": "file_access",
+      "destination": null,
+      "event_id": 983,
+      "match_details": {
+        "action_match": true,
+        "applicable": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "destination_match": null,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time",
+          "action"
+        ],
+        "resource_match": false,
+        "score": 0.0,
+        "status": "unexplained",
+        "time_match": true
+      },
+      "matched_context_ids": [],
+      "resource_id": "finance-archive",
+      "status": "unexplained",
+      "timestamp": "2026-08-27T15:00:00Z"
+    },
+    {
+      "action": "file_download",
+      "destination": null,
+      "event_id": 984,
+      "match_details": {
+        "action_match": true,
+        "applicable": [
+          "time",
+          "resource",
+          "action"
+        ],
+        "destination_match": null,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time",
+          "action"
+        ],
+        "resource_match": false,
+        "score": 0.0,
+        "status": "unexplained",
+        "time_match": true
+      },
+      "matched_context_ids": [],
+      "resource_id": "finance-archive",
+      "status": "unexplained",
+      "timestamp": "2026-08-27T16:00:00Z"
+    },
+    {
+      "action": "external_upload",
+      "destination": "https://personal-cloud.example/upload",
+      "event_id": 985,
+      "match_details": {
+        "action_match": false,
+        "applicable": [
+          "time",
+          "resource",
+          "action",
+          "destination"
+        ],
+        "destination_match": false,
+        "entry_id": 2,
+        "late_context": false,
+        "matched": [
+          "time"
+        ],
+        "resource_match": false,
+        "score": 0.0,
+        "status": "unexplained",
+        "time_match": true
+      },
+      "matched_context_ids": [],
+      "resource_id": "finance-archive",
+      "status": "unexplained",
+      "timestamp": "2026-08-27T17:00:00Z"
+    }
+  ],
+  "feature_snapshot": {
+    "as_of": "2026-08-28T05:00:00+00:00",
+    "primary": {
+      "download_volume_vs_baseline": 328.4507042253521,
+      "event_count": 8.0,
+      "external_destination_novelty": 1.0,
+      "failed_login_burst": 0.0,
+      "geo_velocity_risk": 0.0,
+      "login_device_novelty": 0.0,
+      "login_hour_irregularity": 0.0,
+      "new_device_count": 0.0,
+      "new_resource_count": 2.0,
+      "privilege_change_count": 0.0,
+      "sensitive_access_ratio": 0.375,
+      "suspicious_sequence_flag": 0.0,
+      "suspicious_sequence_magnitude": 0.0
+    },
+    "windows": {
+      "15m": {
+        "download_volume_vs_baseline": 0.0,
+        "event_count": 0.0,
+        "external_destination_novelty": 0.0,
+        "failed_login_burst": 0.0,
+        "geo_velocity_risk": 0.0,
+        "login_device_novelty": 0.0,
+        "login_hour_irregularity": 0.0,
+        "new_device_count": 0.0,
+        "new_resource_count": 0.0,
+        "privilege_change_count": 0.0,
+        "sensitive_access_ratio": 0.0,
+        "suspicious_sequence_flag": 0.0,
+        "suspicious_sequence_magnitude": 0.0
+      },
+      "24h": {
+        "download_volume_vs_baseline": 328.4507042253521,
+        "event_count": 8.0,
+        "external_destination_novelty": 1.0,
+        "failed_login_burst": 0.0,
+        "geo_velocity_risk": 0.0,
+        "login_device_novelty": 0.0,
+        "login_hour_irregularity": 0.0,
+        "new_device_count": 0.0,
+        "new_resource_count": 2.0,
+        "privilege_change_count": 0.0,
+        "sensitive_access_ratio": 0.375,
+        "suspicious_sequence_flag": 0.0,
+        "suspicious_sequence_magnitude": 0.0
+      },
+      "30d": {
+        "download_volume_vs_baseline": 5155.0,
+        "event_count": 91.0,
+        "external_destination_novelty": 1.0,
+        "failed_login_burst": 0.0,
+        "geo_velocity_risk": 0.0,
+        "login_device_novelty": 1.0,
+        "login_hour_irregularity": 0.0,
+        "new_device_count": 1.0,
+        "new_resource_count": 4.0,
+        "privilege_change_count": 0.0,
+        "sensitive_access_ratio": 0.03296703296703297,
+        "suspicious_sequence_flag": 0.0,
+        "suspicious_sequence_magnitude": 0.0
+      },
+      "7d": {
+        "download_volume_vs_baseline": 51.26892857142857,
+        "event_count": 26.0,
+        "external_destination_novelty": 1.0,
+        "failed_login_burst": 0.0,
+        "geo_velocity_risk": 0.0,
+        "login_device_novelty": 0.0,
+        "login_hour_irregularity": 0.0,
+        "new_device_count": 0.0,
+        "new_resource_count": 2.0,
+        "privilege_change_count": 0.0,
+        "sensitive_access_ratio": 0.11538461538461539,
+        "suspicious_sequence_flag": 0.0,
+        "suspicious_sequence_magnitude": 0.0
+      }
+    }
+  },
+  "fusion_components": {
+    "A_t": 0.875,
+    "C_t": 0.5905,
+    "I_t": 0.0,
+    "L_t": 0.0,
+    "M_t": 0.4124,
+    "P_t": 20.7357,
+    "Q_t": 0.0,
+    "S_t": 16.3342,
+    "behavior_model": {
+      "model_type": "IsolationForest",
+      "signal_source": "learned:offline_isolation_forest",
+      "training_seed": 20260915,
+      "training_source": "synthetic_behavior_vectors_v1"
+    },
+    "coverage_method": "constituent_event_evidence_coverage",
+    "fusion_method": "unweighted_noisy_or_then_evidence_coverage",
+    "signal_sources": {
+      "A_t": "rule_based:asset_classification",
+      "C_t": "rule_based:approved_context_coverage",
+      "I_t": "rule_based:observed_privilege_change",
+      "L_t": "rule_based:login_geo_device_failure",
+      "M_t": "learned:offline_isolation_forest",
+      "P_t": "learned:kmeans_cohort_deviation",
+      "Q_t": "rule_based:sequence_detection",
+      "S_t": "rule_based:personal_baseline_deviation"
+    }
+  },
+  "id": 3,
+  "matched_context_ids": [
+    2,
+    4
+  ],
+  "original_assessment": {
+    "baseline_weights": {
+      "alpha": 0.65,
+      "beta": 0.25,
+      "cohort_confidence": "high",
+      "cohort_model": {
+        "actor_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "assignment_as_of": "2026-08-21T05:00:00+00:00",
+        "cluster_count": 1,
+        "cluster_id": 0,
+        "exclusion_days": 7,
+        "fallback": null,
+        "feature_order": [
+          "login_hour_irregularity",
+          "new_device_count",
+          "new_resource_count",
+          "sensitive_access_ratio",
+          "download_volume_vs_baseline",
+          "privilege_change_count",
+          "external_destination_novelty",
+          "suspicious_sequence_flag",
+          "suspicious_sequence_magnitude"
+        ],
+        "signal_source": "learned:kmeans_behavior_cluster"
+      },
+      "cohort_size": 12,
+      "gamma": 0.1,
+      "history_days": 26.83,
+      "rationale": "Established entity, no recent role change: personal \u03b1 high",
+      "role_change_active": false,
+      "role_change_entry_id": null,
+      "uncertainty_band": 1.0
+    },
+    "confidence": "high",
+    "context_coverage": 0.5905,
+    "context_entry_ids": [
+      2
+    ],
+    "created_at": "2026-09-16T15:19:13.643040",
+    "data_quality": "sufficient",
+    "event_risk_breakdown": [
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.0,
+            "raw_fields": {
+              "action": "login",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.0,
+              "cluster_deviation": 0.0,
+              "personal_deviation": 0.0
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 978,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 41.24,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "repo_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 979,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 97.3,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "repo_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 980,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 97.3,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.8,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": 800
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.8
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "file_download",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 981,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 99.46,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 0.954,
+            "raw_fields": {
+              "action": "file_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "internal"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 0.5,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 1.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 982,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 97.3,
+        "residual_before_floor": 0.0,
+        "residual_contribution": 0.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 0.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": null
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 0.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 1.0,
+            "raw_fields": {
+              "action": "file_access",
+              "new_resource_count": 2.0,
+              "resource_classification": "critical"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 1.0,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 0.0,
+        "critical_floor": 0.0,
+        "critical_reasons": [],
+        "event_id": 983,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 100.0,
+        "residual_before_floor": 100.0,
+        "residual_contribution": 100.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 1.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": 2000
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 1.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 1.0,
+            "raw_fields": {
+              "action": "file_download",
+              "new_resource_count": 2.0,
+              "resource_classification": "critical"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 1.0,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 0.0,
+        "critical_floor": 25.0,
+        "critical_reasons": [
+          "bulk_download"
+        ],
+        "event_id": 984,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 100.0,
+        "residual_before_floor": 100.0,
+        "residual_contribution": 100.0
+      },
+      {
+        "categories": {
+          "data_movement": {
+            "combined": 1.0,
+            "raw_fields": {
+              "external_destination_novelty": 1.0,
+              "volume": 2000
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "event_movement": 1.0
+            }
+          },
+          "identity": {
+            "combined": 0.4124,
+            "raw_fields": {
+              "failed_login_burst": 0.0,
+              "geo_velocity_risk": 0.0,
+              "new_device_count": 0.0
+            },
+            "signal_source": "mixed:offline_isolation_forest_and_login_rules",
+            "signals": {
+              "behavior_anomaly_model": 0.4124,
+              "login_risk": 0.0
+            }
+          },
+          "privilege": {
+            "combined": 0.0,
+            "raw_fields": {
+              "privilege_change_count": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "identity_privilege_signal": 0.0,
+              "observed_privilege_change": 0.0
+            }
+          },
+          "resource_access": {
+            "combined": 1.0,
+            "raw_fields": {
+              "action": "external_upload",
+              "new_resource_count": 2.0,
+              "resource_classification": "critical"
+            },
+            "signal_source": "mixed:rules_and_kmeans_baseline",
+            "signals": {
+              "asset_sensitivity": 1.0,
+              "cluster_deviation": 0.9539927400543806,
+              "personal_deviation": 0.9423105767788533
+            }
+          },
+          "temporal_sequence": {
+            "combined": 0.0,
+            "raw_fields": {
+              "suspicious_sequence_flag": 0.0,
+              "suspicious_sequence_magnitude": 0.0
+            },
+            "signal_source": "rule_based",
+            "signals": {
+              "sequence_strength": 0.0
+            }
+          }
+        },
+        "context_credit": 0.0,
+        "critical_floor": 25.0,
+        "critical_reasons": [
+          "external_upload",
+          "external_destination"
+        ],
+        "event_id": 985,
+        "marginal_case_contribution": 0.0,
+        "raw_risk": 100.0,
+        "residual_before_floor": 100.0,
+        "residual_contribution": 100.0
+      }
+    ],
+    "evidence": [
+      "Self-baseline deviation elevated (S_t=16.33)",
+      "Peer/cohort deviation elevated (P_t=20.74)",
+      "High asset sensitivity in involved events (A_t=0.88)",
+      "Offline anomaly-model constituent (M_t=0.41)",
+      "Context explains 5/8 events (risk-weighted coverage=0.59)",
+      "Unmatched: file_access on finance-archive at 2026-08-27T15:00:00+00:00",
+      "Unmatched: file_download on finance-archive at 2026-08-27T16:00:00+00:00",
+      "Unmatched: external_upload on finance-archive at 2026-08-27T17:00:00+00:00"
+    ],
+    "explanation_breakdown": [
+      {
+        "action": "login",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 978,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "action"
+          ],
+          "resource_match": null,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2
+        ],
+        "resource_id": null,
+        "status": "explained",
+        "timestamp": "2026-08-27T09:00:00+00:00"
+      },
+      {
+        "action": "repo_access",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 979,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T10:00:00+00:00"
+      },
+      {
+        "action": "repo_access",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 980,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T11:00:00+00:00"
+      },
+      {
+        "action": "file_download",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 981,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T12:00:00+00:00"
+      },
+      {
+        "action": "file_access",
+        "best_score": 1.0,
+        "destination": null,
+        "event_id": 982,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "resource_match": true,
+          "score": 1.0,
+          "status": "explained",
+          "time_match": true
+        },
+        "matched_context_ids": [
+          2
+        ],
+        "resource_id": "migration-repo",
+        "status": "explained",
+        "timestamp": "2026-08-27T13:00:00+00:00"
+      },
+      {
+        "action": "file_access",
+        "best_score": 0.0,
+        "destination": null,
+        "event_id": 983,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "action"
+          ],
+          "resource_match": false,
+          "score": 0.0,
+          "status": "unexplained",
+          "time_match": true
+        },
+        "matched_context_ids": [],
+        "resource_id": "finance-archive",
+        "status": "unexplained",
+        "timestamp": "2026-08-27T15:00:00+00:00"
+      },
+      {
+        "action": "file_download",
+        "best_score": 0.0,
+        "destination": null,
+        "event_id": 984,
+        "match_details": {
+          "action_match": true,
+          "applicable": [
+            "time",
+            "resource",
+            "action"
+          ],
+          "destination_match": null,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time",
+            "action"
+          ],
+          "resource_match": false,
+          "score": 0.0,
+          "status": "unexplained",
+          "time_match": true
+        },
+        "matched_context_ids": [],
+        "resource_id": "finance-archive",
+        "status": "unexplained",
+        "timestamp": "2026-08-27T16:00:00+00:00"
+      },
+      {
+        "action": "external_upload",
+        "best_score": 0.0,
+        "destination": "https://personal-cloud.example/upload",
+        "event_id": 985,
+        "match_details": {
+          "action_match": false,
+          "applicable": [
+            "time",
+            "resource",
+            "action",
+            "destination"
+          ],
+          "destination_match": false,
+          "entry_id": 2,
+          "late_context": false,
+          "matched": [
+            "time"
+          ],
+          "resource_match": false,
+          "score": 0.0,
+          "status": "unexplained",
+          "time_match": true
+        },
+        "matched_context_ids": [],
+        "resource_id": "finance-archive",
+        "status": "unexplained",
+        "timestamp": "2026-08-27T17:00:00+00:00"
+      }
+    ],
+    "feature_snapshot": {
+      "as_of": "2026-08-28T05:00:00+00:00",
+      "primary": {
+        "download_volume_vs_baseline": 328.4507042253521,
+        "event_count": 8.0,
+        "external_destination_novelty": 1.0,
+        "failed_login_burst": 0.0,
+        "geo_velocity_risk": 0.0,
+        "login_device_novelty": 0.0,
+        "login_hour_irregularity": 0.0,
+        "new_device_count": 0.0,
+        "new_resource_count": 2.0,
+        "privilege_change_count": 0.0,
+        "sensitive_access_ratio": 0.375,
+        "suspicious_sequence_flag": 0.0,
+        "suspicious_sequence_magnitude": 0.0
+      },
+      "windows": {
+        "15m": {
+          "download_volume_vs_baseline": 0.0,
+          "event_count": 0.0,
+          "external_destination_novelty": 0.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 0.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 0.0,
+          "new_resource_count": 0.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.0,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        },
+        "24h": {
+          "download_volume_vs_baseline": 328.4507042253521,
+          "event_count": 8.0,
+          "external_destination_novelty": 1.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 0.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 0.0,
+          "new_resource_count": 2.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.375,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        },
+        "30d": {
+          "download_volume_vs_baseline": 5155.0,
+          "event_count": 91.0,
+          "external_destination_novelty": 1.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 1.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 1.0,
+          "new_resource_count": 4.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.03296703296703297,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        },
+        "7d": {
+          "download_volume_vs_baseline": 51.26892857142857,
+          "event_count": 26.0,
+          "external_destination_novelty": 1.0,
+          "failed_login_burst": 0.0,
+          "geo_velocity_risk": 0.0,
+          "login_device_novelty": 0.0,
+          "login_hour_irregularity": 0.0,
+          "new_device_count": 0.0,
+          "new_resource_count": 2.0,
+          "privilege_change_count": 0.0,
+          "sensitive_access_ratio": 0.11538461538461539,
+          "suspicious_sequence_flag": 0.0,
+          "suspicious_sequence_magnitude": 0.0
+        }
+      }
+    },
+    "fusion_components": {
+      "A_t": 0.875,
+      "C_t": 0.5905,
+      "I_t": 0.0,
+      "L_t": 0.0,
+      "M_t": 0.4124,
+      "P_t": 20.7357,
+      "Q_t": 0.0,
+      "S_t": 16.3342,
+      "behavior_model": {
+        "model_type": "IsolationForest",
+        "signal_source": "learned:offline_isolation_forest",
+        "training_seed": 20260915,
+        "training_source": "synthetic_behavior_vectors_v1"
+      },
+      "coverage_method": "constituent_event_evidence_coverage",
+      "fusion_method": "unweighted_noisy_or_then_evidence_coverage",
+      "signal_sources": {
+        "A_t": "rule_based:asset_classification",
+        "C_t": "rule_based:approved_context_coverage",
+        "I_t": "rule_based:observed_privilege_change",
+        "L_t": "rule_based:login_geo_device_failure",
+        "M_t": "learned:offline_isolation_forest",
+        "P_t": "learned:kmeans_cohort_deviation",
+        "Q_t": "rule_based:sequence_detection",
+        "S_t": "rule_based:personal_baseline_deviation"
+      }
+    },
+    "id": 3,
+    "input_event_ids": [
+      978,
+      979,
+      980,
+      981,
+      982,
+      983,
+      984,
+      985
+    ],
+    "matched_context_ids": [
+      2
+    ],
+    "primary_cause": "peer-cohort deviation",
+    "raw_deviation": 100.0,
+    "residual_risk": 100.0,
+    "residual_unresolved_count": 0,
+    "trigger": "detection",
+    "unmatched_behavior": [
+      "file_access on finance-archive at 2026-08-27T15:00:00+00:00",
+      "file_download on finance-archive at 2026-08-27T16:00:00+00:00",
+      "external_upload on finance-archive at 2026-08-27T17:00:00+00:00"
+    ]
+  },
+  "primary_cause": "peer-cohort deviation",
+  "raw_deviation": 100.0,
+  "residual_risk": 100.0,
+  "residual_unresolved_count": 0,
+  "retroactive_justification_review": true,
+  "status": "open",
+  "unmatched_behavior": [
+    "file_access on finance-archive at 2026-08-27T15:00:00+00:00",
+    "file_download on finance-archive at 2026-08-27T16:00:00+00:00",
+    "external_upload on finance-archive at 2026-08-27T17:00:00+00:00"
+  ]
+}

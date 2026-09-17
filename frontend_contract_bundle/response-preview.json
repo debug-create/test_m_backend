@@ -1,0 +1,68 @@
+{
+  "allow": true,
+  "approval_required": false,
+  "automatic": true,
+  "blast_radius": {
+    "affected_destinations": [],
+    "affected_event_ids": [
+      889,
+      890,
+      891,
+      892,
+      893,
+      894
+    ],
+    "affected_permissions": [],
+    "affected_resources": [
+      "finance-archive"
+    ],
+    "affected_sessions": [
+      "unknown-vps-77"
+    ],
+    "evidence_paths": [
+      [
+        "entity:ent_fe7ed6290e77ccab",
+        "session:unknown-vps-77",
+        "resource:finance-archive"
+      ]
+    ],
+    "graph_generated_at": "2026-09-16T15:19:20.120632+00:00",
+    "potentially_disrupted_legitimate_activity": [],
+    "unaffected_activity": []
+  },
+  "case_id": 2,
+  "entity_ref": "ent_fe7ed6290e77ccab",
+  "evidence_categories": [
+    "data_movement",
+    "identity",
+    "privilege",
+    "resource_access",
+    "temporal_sequence"
+  ],
+  "policy_rule_id": "RP-PROTECTIVE-HOLD-001",
+  "reasons": [
+    "Priority threshold met",
+    "Unresolved critical/high-risk evidence is present",
+    "Scope is bounded and rollback is available",
+    "Independent-category or decisive-hard-rule requirement met"
+  ],
+  "recommended_action": "block_external_upload",
+  "requested_action": "rate_limit_download",
+  "rollback_plan": {
+    "automatic_on_expiry": true,
+    "operation": "deactivate_control"
+  },
+  "target_scope": {
+    "resource": "finance-archive",
+    "session": "unknown-vps-77"
+  },
+  "trigger_event_ids": [
+    889,
+    890,
+    891,
+    892,
+    893,
+    894
+  ],
+  "ttl_seconds": 900
+}

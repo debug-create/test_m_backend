@@ -1,0 +1,2929 @@
+{
+  "components": {
+    "schemas": {
+      "ActionType": {
+        "enum": [
+          "login",
+          "file_access",
+          "file_download",
+          "repo_access",
+          "privilege_change",
+          "external_upload",
+          "permission_request"
+        ],
+        "title": "ActionType",
+        "type": "string"
+      },
+      "CaseDetail": {
+        "properties": {
+          "actor_ref": {
+            "title": "Actor Ref",
+            "type": "string"
+          },
+          "baseline_weights": {
+            "additionalProperties": true,
+            "title": "Baseline Weights",
+            "type": "object"
+          },
+          "change_point_timestamps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Change Point Timestamps",
+            "type": "array"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/ConfidenceLevel"
+          },
+          "context_coverage": {
+            "title": "Context Coverage",
+            "type": "number"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "current_assessment": {
+            "additionalProperties": true,
+            "title": "Current Assessment",
+            "type": "object"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/DataQuality",
+            "default": "sufficient"
+          },
+          "event_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Event Ids",
+            "type": "array"
+          },
+          "event_risk_breakdown": {
+            "items": {
+              "$ref": "#/components/schemas/EventRiskContribution"
+            },
+            "title": "Event Risk Breakdown",
+            "type": "array"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "explanation_breakdown": {
+            "items": {
+              "$ref": "#/components/schemas/EventExplanation"
+            },
+            "title": "Explanation Breakdown",
+            "type": "array"
+          },
+          "feature_snapshot": {
+            "additionalProperties": true,
+            "title": "Feature Snapshot",
+            "type": "object"
+          },
+          "fusion_components": {
+            "additionalProperties": true,
+            "title": "Fusion Components",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "matched_context_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Matched Context Ids",
+            "type": "array"
+          },
+          "original_assessment": {
+            "additionalProperties": true,
+            "title": "Original Assessment",
+            "type": "object"
+          },
+          "primary_cause": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Cause"
+          },
+          "raw_deviation": {
+            "title": "Raw Deviation",
+            "type": "number"
+          },
+          "residual_risk": {
+            "title": "Residual Risk",
+            "type": "number"
+          },
+          "residual_unresolved_count": {
+            "default": 0,
+            "title": "Residual Unresolved Count",
+            "type": "integer"
+          },
+          "retroactive_justification_review": {
+            "default": false,
+            "title": "Retroactive Justification Review",
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "unmatched_behavior": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unmatched Behavior",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "actor_ref",
+          "created_at",
+          "status",
+          "raw_deviation",
+          "context_coverage",
+          "residual_risk",
+          "confidence",
+          "evidence",
+          "matched_context_ids",
+          "unmatched_behavior",
+          "event_ids",
+          "change_point_timestamps",
+          "explanation_breakdown",
+          "baseline_weights",
+          "feature_snapshot"
+        ],
+        "title": "CaseDetail",
+        "type": "object"
+      },
+      "CaseStatus": {
+        "enum": [
+          "open",
+          "reviewing",
+          "resolved",
+          "reopened"
+        ],
+        "title": "CaseStatus",
+        "type": "string"
+      },
+      "CaseSummary": {
+        "properties": {
+          "actor_ref": {
+            "title": "Actor Ref",
+            "type": "string"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/ConfidenceLevel"
+          },
+          "context_coverage": {
+            "title": "Context Coverage",
+            "type": "number"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/DataQuality",
+            "default": "sufficient"
+          },
+          "hard_rule_flag": {
+            "default": false,
+            "title": "Hard Rule Flag",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "primary_cause": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Cause"
+          },
+          "raw_deviation": {
+            "title": "Raw Deviation",
+            "type": "number"
+          },
+          "residual_risk": {
+            "title": "Residual Risk",
+            "type": "number"
+          },
+          "residual_unresolved_count": {
+            "default": 0,
+            "title": "Residual Unresolved Count",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          }
+        },
+        "required": [
+          "id",
+          "actor_ref",
+          "created_at",
+          "status",
+          "raw_deviation",
+          "context_coverage",
+          "residual_risk",
+          "confidence"
+        ],
+        "title": "CaseSummary",
+        "type": "object"
+      },
+      "ConfidenceLevel": {
+        "enum": [
+          "low",
+          "moderate",
+          "high"
+        ],
+        "title": "ConfidenceLevel",
+        "type": "string"
+      },
+      "ContextLedgerEntryCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "allowed_actions": {
+            "items": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Allowed Actions",
+            "type": "array"
+          },
+          "allowed_resources": {
+            "items": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Allowed Resources",
+            "type": "array"
+          },
+          "approved_destinations": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 256,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved Destinations"
+          },
+          "effective_from": {
+            "format": "date-time",
+            "title": "Effective From",
+            "type": "string"
+          },
+          "effective_until": {
+            "format": "date-time",
+            "title": "Effective Until",
+            "type": "string"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ContextReason"
+          },
+          "supersedes_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes Id"
+          }
+        },
+        "required": [
+          "reason",
+          "effective_from",
+          "effective_until"
+        ],
+        "title": "ContextLedgerEntryCreate",
+        "type": "object"
+      },
+      "ContextLedgerEntryOut": {
+        "properties": {
+          "actor_ref": {
+            "title": "Actor Ref",
+            "type": "string"
+          },
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Actions",
+            "type": "array"
+          },
+          "allowed_resources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Resources",
+            "type": "array"
+          },
+          "approval_state": {
+            "title": "Approval State",
+            "type": "string"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "approved_by": {
+            "title": "Approved By",
+            "type": "string"
+          },
+          "approved_destinations": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved Destinations"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "effective_from": {
+            "format": "date-time",
+            "title": "Effective From",
+            "type": "string"
+          },
+          "effective_until": {
+            "format": "date-time",
+            "title": "Effective Until",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "late_context": {
+            "default": false,
+            "title": "Late Context",
+            "type": "boolean"
+          },
+          "proposed_at": {
+            "format": "date-time",
+            "title": "Proposed At",
+            "type": "string"
+          },
+          "proposed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed By"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ContextReason"
+          },
+          "review_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Note"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "supersedes_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes Id"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_until": {
+            "format": "date-time",
+            "title": "Valid Until",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "actor_ref",
+          "reason",
+          "valid_from",
+          "valid_until",
+          "effective_from",
+          "effective_until",
+          "allowed_resources",
+          "allowed_actions",
+          "approved_by",
+          "approval_state",
+          "proposed_at",
+          "created_at"
+        ],
+        "title": "ContextLedgerEntryOut",
+        "type": "object"
+      },
+      "ContextReason": {
+        "enum": [
+          "role_change",
+          "project",
+          "travel",
+          "maintenance",
+          "contract"
+        ],
+        "title": "ContextReason",
+        "type": "string"
+      },
+      "ContextReview": {
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "pattern": "^(approved|rejected)$",
+            "title": "Decision",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "title": "ContextReview",
+        "type": "object"
+      },
+      "CounterfactualComponent": {
+        "properties": {
+          "component": {
+            "title": "Component",
+            "type": "string"
+          },
+          "delta": {
+            "title": "Delta",
+            "type": "number"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "residual_risk_without": {
+            "title": "Residual Risk Without",
+            "type": "number"
+          }
+        },
+        "required": [
+          "component",
+          "description",
+          "residual_risk_without",
+          "delta"
+        ],
+        "title": "CounterfactualComponent",
+        "type": "object"
+      },
+      "CounterfactualOut": {
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "integer"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/CounterfactualComponent"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "residual_risk": {
+            "title": "Residual Risk",
+            "type": "number"
+          }
+        },
+        "required": [
+          "case_id",
+          "residual_risk",
+          "components"
+        ],
+        "title": "CounterfactualOut",
+        "type": "object"
+      },
+      "DataQuality": {
+        "enum": [
+          "sufficient",
+          "sparse",
+          "insufficient"
+        ],
+        "title": "DataQuality",
+        "type": "string"
+      },
+      "EntityOut": {
+        "properties": {
+          "department": {
+            "title": "Department",
+            "type": "string"
+          },
+          "entity_ref": {
+            "title": "Entity Ref",
+            "type": "string"
+          },
+          "hire_date": {
+            "format": "date-time",
+            "title": "Hire Date",
+            "type": "string"
+          },
+          "regime_feature": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "overall_deviation",
+            "title": "Regime Feature"
+          },
+          "regime_state": {
+            "$ref": "#/components/schemas/RegimeState",
+            "default": "nominal"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_ref",
+          "role",
+          "department",
+          "hire_date"
+        ],
+        "title": "EntityOut",
+        "type": "object"
+      },
+      "EventCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ActionType"
+          },
+          "destination": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination"
+          },
+          "device_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Device Id",
+            "type": "string"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "resource_classification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResourceClassification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "result": {
+            "$ref": "#/components/schemas/EventResult",
+            "default": "success"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          }
+        },
+        "required": [
+          "timestamp",
+          "device_id",
+          "action"
+        ],
+        "title": "EventCreate",
+        "type": "object"
+      },
+      "EventExplanation": {
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "destination": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "integer"
+          },
+          "match_details": {
+            "additionalProperties": true,
+            "title": "Match Details",
+            "type": "object"
+          },
+          "matched_context_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Matched Context Ids",
+            "type": "array"
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ExplanationStatus"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "timestamp",
+          "action",
+          "status"
+        ],
+        "title": "EventExplanation",
+        "type": "object"
+      },
+      "EventOut": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ActionType"
+          },
+          "actor_ref": {
+            "title": "Actor Ref",
+            "type": "string"
+          },
+          "destination": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination"
+          },
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "resource_classification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResourceClassification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "result": {
+            "$ref": "#/components/schemas/EventResult"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          }
+        },
+        "required": [
+          "id",
+          "timestamp",
+          "actor_ref",
+          "device_id",
+          "action",
+          "result"
+        ],
+        "title": "EventOut",
+        "type": "object"
+      },
+      "EventResult": {
+        "enum": [
+          "success",
+          "failure"
+        ],
+        "title": "EventResult",
+        "type": "string"
+      },
+      "EventRiskContribution": {
+        "properties": {
+          "categories": {
+            "additionalProperties": true,
+            "title": "Categories",
+            "type": "object"
+          },
+          "context_credit": {
+            "title": "Context Credit",
+            "type": "number"
+          },
+          "critical_floor": {
+            "title": "Critical Floor",
+            "type": "number"
+          },
+          "critical_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Critical Reasons",
+            "type": "array"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "integer"
+          },
+          "marginal_case_contribution": {
+            "title": "Marginal Case Contribution",
+            "type": "number"
+          },
+          "raw_risk": {
+            "title": "Raw Risk",
+            "type": "number"
+          },
+          "residual_before_floor": {
+            "title": "Residual Before Floor",
+            "type": "number"
+          },
+          "residual_contribution": {
+            "title": "Residual Contribution",
+            "type": "number"
+          }
+        },
+        "required": [
+          "event_id",
+          "raw_risk",
+          "context_credit",
+          "residual_before_floor",
+          "critical_floor",
+          "residual_contribution",
+          "marginal_case_contribution"
+        ],
+        "title": "EventRiskContribution",
+        "type": "object"
+      },
+      "EvidenceGraphOut": {
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "integer"
+          },
+          "cycles": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Cycles",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "entity_ref": {
+            "title": "Entity Ref",
+            "type": "string"
+          },
+          "evidence_paths": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Evidence Paths",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "nodes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Nodes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "case_id",
+          "entity_ref",
+          "generated_at",
+          "nodes",
+          "edges",
+          "evidence_paths",
+          "cycles"
+        ],
+        "title": "EvidenceGraphOut",
+        "type": "object"
+      },
+      "ExplanationStatus": {
+        "enum": [
+          "explained",
+          "partially_explained",
+          "unexplained",
+          "indeterminate"
+        ],
+        "title": "ExplanationStatus",
+        "type": "string"
+      },
+      "FeedbackCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/FeedbackVerdict"
+          }
+        },
+        "required": [
+          "verdict"
+        ],
+        "title": "FeedbackCreate",
+        "type": "object"
+      },
+      "FeedbackOut": {
+        "properties": {
+          "case_id": {
+            "title": "Case Id",
+            "type": "integer"
+          },
+          "case_status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "cohort_threshold_adjustment": {
+            "additionalProperties": true,
+            "title": "Cohort Threshold Adjustment",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/FeedbackVerdict"
+          }
+        },
+        "required": [
+          "id",
+          "case_id",
+          "verdict",
+          "timestamp",
+          "case_status",
+          "cohort_threshold_adjustment"
+        ],
+        "title": "FeedbackOut",
+        "type": "object"
+      },
+      "FeedbackVerdict": {
+        "enum": [
+          "authorized",
+          "policy_violation",
+          "compromised",
+          "benign_unusual",
+          "insufficient_evidence"
+        ],
+        "title": "FeedbackVerdict",
+        "type": "string"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "RegimeState": {
+        "enum": [
+          "nominal",
+          "latched"
+        ],
+        "title": "RegimeState",
+        "type": "string"
+      },
+      "ResourceClassification": {
+        "enum": [
+          "public",
+          "internal",
+          "restricted",
+          "critical"
+        ],
+        "title": "ResourceClassification",
+        "type": "string"
+      },
+      "ResponseActionDecision": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note"
+        ],
+        "title": "ResponseActionDecision",
+        "type": "object"
+      },
+      "ResponseActionOut": {
+        "properties": {
+          "action_id": {
+            "title": "Action Id",
+            "type": "string"
+          },
+          "action_type": {
+            "$ref": "#/components/schemas/ResponseActionType"
+          },
+          "approval_required": {
+            "title": "Approval Required",
+            "type": "boolean"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "assessment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assessment Id"
+          },
+          "automatic": {
+            "title": "Automatic",
+            "type": "boolean"
+          },
+          "blast_radius": {
+            "additionalProperties": true,
+            "title": "Blast Radius",
+            "type": "object"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "integer"
+          },
+          "entity_ref": {
+            "title": "Entity Ref",
+            "type": "string"
+          },
+          "evidence_categories": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Categories",
+            "type": "array"
+          },
+          "executed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executed At"
+          },
+          "execution_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Result"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "failed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failed At"
+          },
+          "failure_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Reason"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "policy_decision": {
+            "title": "Policy Decision",
+            "type": "string"
+          },
+          "policy_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Policy Reasons",
+            "type": "array"
+          },
+          "policy_rule_id": {
+            "title": "Policy Rule Id",
+            "type": "string"
+          },
+          "requested_at": {
+            "format": "date-time",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "requested_by": {
+            "title": "Requested By",
+            "type": "string"
+          },
+          "rollback_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rollback Result"
+          },
+          "rolled_back_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rolled Back At"
+          },
+          "scoring_version": {
+            "title": "Scoring Version",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseActionStatus"
+          },
+          "target_scope": {
+            "additionalProperties": true,
+            "title": "Target Scope",
+            "type": "object"
+          },
+          "transitions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Transitions",
+            "type": "array"
+          },
+          "trigger_event_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Trigger Event Ids",
+            "type": "array"
+          },
+          "verification_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification Result"
+          }
+        },
+        "required": [
+          "action_id",
+          "case_id",
+          "entity_ref",
+          "action_type",
+          "status",
+          "mode",
+          "requested_by",
+          "requested_at",
+          "scoring_version",
+          "trigger_event_ids",
+          "policy_rule_id",
+          "policy_decision",
+          "policy_reasons",
+          "evidence_categories",
+          "target_scope",
+          "blast_radius",
+          "approval_required",
+          "automatic",
+          "idempotency_key"
+        ],
+        "title": "ResponseActionOut",
+        "type": "object"
+      },
+      "ResponseActionPreviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action_type": {
+            "$ref": "#/components/schemas/ResponseActionType"
+          },
+          "target_scope": {
+            "additionalProperties": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Target Scope",
+            "type": "object"
+          }
+        },
+        "required": [
+          "action_type"
+        ],
+        "title": "ResponseActionPreviewRequest",
+        "type": "object"
+      },
+      "ResponseActionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action_type": {
+            "$ref": "#/components/schemas/ResponseActionType"
+          },
+          "idempotency_key": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "target_scope": {
+            "additionalProperties": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Target Scope",
+            "type": "object"
+          }
+        },
+        "required": [
+          "action_type",
+          "idempotency_key"
+        ],
+        "title": "ResponseActionRequest",
+        "type": "object"
+      },
+      "ResponseActionStatus": {
+        "enum": [
+          "proposed",
+          "auto_authorized",
+          "awaiting_approval",
+          "approved",
+          "executing",
+          "active",
+          "expired",
+          "rolled_back",
+          "failed",
+          "rejected"
+        ],
+        "title": "ResponseActionStatus",
+        "type": "string"
+      },
+      "ResponseActionType": {
+        "enum": [
+          "observe",
+          "step_up_auth",
+          "block_external_upload",
+          "freeze_privilege_change",
+          "rate_limit_download",
+          "revoke_session",
+          "isolate_device",
+          "disable_account"
+        ],
+        "title": "ResponseActionType",
+        "type": "string"
+      },
+      "ResponsePreviewOut": {
+        "properties": {
+          "allow": {
+            "title": "Allow",
+            "type": "boolean"
+          },
+          "approval_required": {
+            "title": "Approval Required",
+            "type": "boolean"
+          },
+          "automatic": {
+            "title": "Automatic",
+            "type": "boolean"
+          },
+          "blast_radius": {
+            "additionalProperties": true,
+            "title": "Blast Radius",
+            "type": "object"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "integer"
+          },
+          "entity_ref": {
+            "title": "Entity Ref",
+            "type": "string"
+          },
+          "evidence_categories": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Categories",
+            "type": "array"
+          },
+          "policy_rule_id": {
+            "title": "Policy Rule Id",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "recommended_action": {
+            "$ref": "#/components/schemas/ResponseActionType"
+          },
+          "requested_action": {
+            "$ref": "#/components/schemas/ResponseActionType"
+          },
+          "rollback_plan": {
+            "additionalProperties": true,
+            "title": "Rollback Plan",
+            "type": "object"
+          },
+          "target_scope": {
+            "additionalProperties": true,
+            "title": "Target Scope",
+            "type": "object"
+          },
+          "trigger_event_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Trigger Event Ids",
+            "type": "array"
+          },
+          "ttl_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttl Seconds"
+          }
+        },
+        "required": [
+          "case_id",
+          "entity_ref",
+          "requested_action",
+          "recommended_action",
+          "allow",
+          "automatic",
+          "approval_required",
+          "policy_rule_id",
+          "reasons",
+          "target_scope",
+          "blast_radius",
+          "rollback_plan",
+          "evidence_categories",
+          "trigger_event_ids"
+        ],
+        "title": "ResponsePreviewOut",
+        "type": "object"
+      },
+      "ShiftMapData": {
+        "properties": {
+          "actor_ref": {
+            "title": "Actor Ref",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "integer"
+          },
+          "change_point_timestamps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Change Point Timestamps",
+            "type": "array"
+          },
+          "domains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Domains",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/ShiftMapEdge"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/ShiftMapNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "case_id",
+          "actor_ref",
+          "change_point_timestamps",
+          "nodes",
+          "edges",
+          "domains"
+        ],
+        "title": "ShiftMapData",
+        "type": "object"
+      },
+      "ShiftMapEdge": {
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "integer"
+          },
+          "explanation_status": {
+            "$ref": "#/components/schemas/ExplanationStatus"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "target",
+          "timestamp",
+          "action",
+          "explanation_status",
+          "event_id"
+        ],
+        "title": "ShiftMapEdge",
+        "type": "object"
+      },
+      "ShiftMapNode": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "title": "Meta",
+            "type": "object"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "label"
+        ],
+        "title": "ShiftMapNode",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "title": "Fable",
+    "version": "2.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/admin/audit": {
+      "get": {
+        "operationId": "list_audit_log_admin_audit_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Audit Log",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/enforcement-state": {
+      "get": {
+        "operationId": "get_enforcement_state_admin_enforcement_state_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Enforcement State",
+        "tags": [
+          "admin",
+          "response"
+        ]
+      }
+    },
+    "/admin/reseed": {
+      "post": {
+        "operationId": "reseed_admin_reseed_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reseed",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/cases": {
+      "get": {
+        "operationId": "list_cases_cases_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "max_cases_per_day",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Cases Per Day"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CaseSummary"
+                  },
+                  "title": "Response List Cases Cases Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Cases",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/cases/{case_id}": {
+      "get": {
+        "operationId": "get_case_cases__case_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Case",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/cases/{case_id}/counterfactual": {
+      "get": {
+        "operationId": "get_counterfactual_cases__case_id__counterfactual_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounterfactualOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Counterfactual",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/cases/{case_id}/evidence-graph": {
+      "get": {
+        "operationId": "get_evidence_graph_cases__case_id__evidence_graph_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceGraphOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Evidence Graph",
+        "tags": [
+          "response"
+        ]
+      }
+    },
+    "/cases/{case_id}/feedback": {
+      "post": {
+        "operationId": "post_feedback_cases__case_id__feedback_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Feedback",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/cases/{case_id}/response-actions": {
+      "get": {
+        "operationId": "list_response_actions_cases__case_id__response_actions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ResponseActionOut"
+                  },
+                  "title": "Response List Response Actions Cases  Case Id  Response Actions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Response Actions",
+        "tags": [
+          "response"
+        ]
+      },
+      "post": {
+        "operationId": "request_response_action_cases__case_id__response_actions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Request Response Action",
+        "tags": [
+          "response"
+        ]
+      }
+    },
+    "/cases/{case_id}/response-actions/preview": {
+      "post": {
+        "operationId": "preview_response_action_cases__case_id__response_actions_preview_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseActionPreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePreviewOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Preview Response Action",
+        "tags": [
+          "response"
+        ]
+      }
+    },
+    "/cases/{case_id}/shift-map-data": {
+      "get": {
+        "operationId": "get_shift_map_cases__case_id__shift_map_data_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShiftMapData"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Shift Map",
+        "tags": [
+          "cases"
+        ]
+      }
+    },
+    "/context/{entry_id}/review": {
+      "post": {
+        "operationId": "review_context_context__entry_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContextReview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextLedgerEntryOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Review Context",
+        "tags": [
+          "context"
+        ]
+      }
+    },
+    "/entities": {
+      "get": {
+        "operationId": "list_entities_entities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EntityOut"
+                  },
+                  "title": "Response List Entities Entities Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Entities",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/{entity_ref}": {
+      "get": {
+        "operationId": "get_entity_entities__entity_ref__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_ref",
+            "required": true,
+            "schema": {
+              "title": "Entity Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Entity",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/{entity_ref}/context": {
+      "get": {
+        "operationId": "list_entity_context_entities__entity_ref__context_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_ref",
+            "required": true,
+            "schema": {
+              "title": "Entity Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ContextLedgerEntryOut"
+                  },
+                  "title": "Response List Entity Context Entities  Entity Ref  Context Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Entity Context",
+        "tags": [
+          "entities"
+        ]
+      },
+      "post": {
+        "description": "Append a pending proposal. It cannot affect assessments before approval.",
+        "operationId": "propose_entity_context_entities__entity_ref__context_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_ref",
+            "required": true,
+            "schema": {
+              "title": "Entity Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContextLedgerEntryCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextLedgerEntryOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Propose Entity Context",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/entities/{entity_ref}/events": {
+      "get": {
+        "operationId": "list_entity_events_entities__entity_ref__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_ref",
+            "required": true,
+            "schema": {
+              "title": "Entity Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EventOut"
+                  },
+                  "title": "Response List Entity Events Entities  Entity Ref  Events Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Entity Events",
+        "tags": [
+          "entities"
+        ]
+      },
+      "post": {
+        "operationId": "ingest_entity_event_entities__entity_ref__events_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_ref",
+            "required": true,
+            "schema": {
+              "title": "Entity Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Ingest Entity Event",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/response-actions/{action_id}/approve": {
+      "post": {
+        "operationId": "approve_response_action_response_actions__action_id__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseActionDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Approve Response Action",
+        "tags": [
+          "response"
+        ]
+      }
+    },
+    "/response-actions/{action_id}/execute": {
+      "post": {
+        "operationId": "execute_response_action_response_actions__action_id__execute_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Execute Response Action",
+        "tags": [
+          "response"
+        ]
+      }
+    },
+    "/response-actions/{action_id}/reject": {
+      "post": {
+        "operationId": "reject_response_action_response_actions__action_id__reject_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseActionDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reject Response Action",
+        "tags": [
+          "response"
+        ]
+      }
+    },
+    "/response-actions/{action_id}/rollback": {
+      "post": {
+        "operationId": "rollback_response_action_response_actions__action_id__rollback_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponseActionDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Rollback Response Action",
+        "tags": [
+          "response"
+        ]
+      }
+    }
+  }
+}

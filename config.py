@@ -1,28 +1,11 @@
-"""Fable configuration and manually-set fusion weights.
+"""Fable runtime and detector configuration."""
 
-These weights are NOT learned. They were chosen by the team for interpretability
-and can be defended / adjusted directly during demos and judge Q&A.
-"""
-
+from dataclasses import dataclass
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE_URL = f"sqlite:///{BASE_DIR / 'fable.db'}"
-
-# ---------------------------------------------------------------------------
-# Evidence fusion weights (manually set — not learned)
-# R_t = σ(w_s·S_t + w_p·P_t + w_q·Q_t + w_a·A_t + w_i·I_t − w_c·C_t)
-#
-# Inputs S/P/Q/A/I/C are normalized to roughly [0, 1] before weighting.
-# W_C is intentionally large so adding legitimate context visibly lowers
-# residual_risk (required for live judge demos that edit the ledger).
-# ---------------------------------------------------------------------------
-W_S = 0.20  # self-baseline deviation
-W_P = 0.12  # peer/cohort deviation
-W_Q = 0.22  # sequence-risk strength
-W_A = 0.28  # asset sensitivity
-W_I = 0.18  # identity/privilege risk
-W_C = 0.75  # matched legitimate context (subtractive)
+DATABASE_URL = os.getenv("FABLE_DATABASE_URL", f"sqlite:///{BASE_DIR / 'fable.db'}")
 
 # Suspicious sequence window (hours)
 SUSPICIOUS_SEQUENCE_WINDOW_HOURS = 48
@@ -36,6 +19,7 @@ PH_ALPHA = 0.01  # forgetting factor for running mean
 MIN_PERSONAL_HISTORY_DAYS = 14
 ROLE_CHANGE_BLEND_DAYS = 30
 MIN_COHORT_SIZE = 3
+CLUSTER_EXCLUSION_DAYS = 7
 
 # Baseline mixing defaults
 ALPHA_ESTABLISHED = 0.65
@@ -54,3 +38,89 @@ WINDOW_30D = 30 * 24 * 3600
 
 SENSITIVE_CLASSIFICATIONS = {"restricted", "critical"}
 DOWNLOAD_ACTIONS = {"file_download", "external_upload"}
+
+# Response-policy constants. Detection scores are read-only inputs to this layer.
+RESPONSE_PRIORITY_THRESHOLD = 75.0
+RESPONSE_DEFAULT_TTL_MINUTES = 15
+RESPONSE_STEP_UP_TTL_MINUTES = 5
+RESPONSE_MIN_INDEPENDENT_CATEGORIES = 2
+RESPONSE_SCORING_VERSION = "event-fusion-v2"
+
+
+@dataclass(frozen=True)
+class ProductionSettings:
+    environment: str
+    database_url: str
+    redis_url: str | None
+    auth_mode: str
+    oidc_issuer: str | None
+    oidc_audience: str | None
+    oidc_jwks_url: str | None
+    enforcement_mode: str
+    enforcement_webhook_url: str | None
+    enforcement_webhook_secret: str | None
+    notification_webhook_url: str | None
+    notification_webhook_secret: str | None
+    groq_enabled: bool
+    groq_model: str
+    groq_timeout_seconds: float
+    groq_max_retries: int
+    groq_max_concurrency: int
+    groq_confidence_threshold: float
+    groq_prompt_version: str
+    tenant_default: str
+    debug: bool
+
+
+def load_settings() -> ProductionSettings:
+    truthy = {"1", "true", "yes", "on"}
+    return ProductionSettings(
+        environment=os.getenv("FABLE_ENV", "development").lower(),
+        database_url=os.getenv("FABLE_DATABASE_URL", DATABASE_URL),
+        redis_url=os.getenv("FABLE_REDIS_URL"),
+        auth_mode=os.getenv("FABLE_AUTH_MODE", "api_key").lower(),
+        oidc_issuer=os.getenv("FABLE_OIDC_ISSUER"),
+        oidc_audience=os.getenv("FABLE_OIDC_AUDIENCE"),
+        oidc_jwks_url=os.getenv("FABLE_OIDC_JWKS_URL"),
+        enforcement_mode=os.getenv("FABLE_ENFORCEMENT_MODE", "sandbox").lower(),
+        enforcement_webhook_url=os.getenv("FABLE_ENFORCEMENT_WEBHOOK_URL"),
+        enforcement_webhook_secret=os.getenv("FABLE_ENFORCEMENT_WEBHOOK_SECRET"),
+        notification_webhook_url=os.getenv("FABLE_NOTIFICATION_WEBHOOK_URL"),
+        notification_webhook_secret=os.getenv("FABLE_NOTIFICATION_WEBHOOK_SECRET"),
+        groq_enabled=os.getenv("GROQ_ENABLED", "false").lower() in truthy,
+        groq_model=os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"),
+        groq_timeout_seconds=float(os.getenv("GROQ_TIMEOUT_SECONDS", "10")),
+        groq_max_retries=int(os.getenv("GROQ_MAX_RETRIES", "2")),
+        groq_max_concurrency=int(os.getenv("GROQ_MAX_CONCURRENCY", "4")),
+        groq_confidence_threshold=float(os.getenv("GROQ_CONFIDENCE_THRESHOLD", "0.7")),
+        groq_prompt_version=os.getenv("GROQ_PROMPT_VERSION", "jit-review-v1"),
+        tenant_default=os.getenv("FABLE_DEFAULT_TENANT", "default"),
+        debug=os.getenv("FABLE_DEBUG", "false").lower() in truthy,
+    )
+
+
+def validate_production_settings(settings: ProductionSettings | None = None) -> None:
+    value = settings or load_settings()
+    if value.environment != "production":
+        return
+    errors = []
+    if not value.database_url.startswith(("postgresql://", "postgresql+psycopg://")):
+        errors.append("production requires PostgreSQL")
+    if not value.redis_url:
+        errors.append("production requires FABLE_REDIS_URL")
+    if value.auth_mode != "oidc" or not all(
+        [value.oidc_issuer, value.oidc_audience, value.oidc_jwks_url]
+    ):
+        errors.append("production requires complete OIDC configuration")
+    if value.enforcement_mode != "signed_webhook":
+        errors.append("production requires signed_webhook enforcement")
+    if not value.enforcement_webhook_url or not value.enforcement_webhook_secret:
+        errors.append("production enforcement webhook is incomplete")
+    if value.enforcement_webhook_secret in {"secret", "changeme", "default"}:
+        errors.append("default webhook signing secret is forbidden")
+    if value.debug:
+        errors.append("debug mode is forbidden in production")
+    if os.getenv("FABLE_ENABLE_RESEED", "").lower() in {"1", "true", "yes"}:
+        errors.append("demo reseeding is forbidden in production")
+    if errors:
+        raise RuntimeError("Invalid production configuration: " + "; ".join(errors))
