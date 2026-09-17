@@ -240,3 +240,144 @@ Defaults permit `http://localhost:3000` and `http://127.0.0.1:3000`, without
 credentials. Configure origins with `FABLE_CORS_ORIGINS` and credential behavior
 with `FABLE_CORS_ALLOW_CREDENTIALS`. Wildcard plus credentials is rejected at
 startup.
+
+---
+
+## JIT access API (`/api/v1`)
+
+### Authentication and scope
+
+All `/api/v1` routes inherit the same bearer-key authentication as the detection API. The `access:read` scope is required on all routes below. Additional scopes are listed per route.
+
+### Idempotency
+
+All mutation endpoints (`POST`) require an `Idempotency-Key` header of 8–128 characters. A missing or too-short key returns `400`. The same key with the same request body returns the stored response (replayed `200` or original status). The same key with a different body returns `409 Conflict`.
+
+### Error format
+
+All errors use RFC 7807 Problem Details:
+
+```json
+{
+  "type": "about:blank",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Access request not found"
+}
+```
+
+### State machine
+
+```
+PAUSED → EVIDENCE_READY → AI_REVIEW_PENDING → AI_REVIEWED → AWAITING_APPROVAL → APPROVED → ENFORCING → ACTIVE → REVOKING → REVOKED
+       ↘ MORE_CONTEXT_REQUIRED ↗                                               ↘ DENIED
+       ↘ DENIED                                                                           ↘ EXPIRED
+                                                                               ENFORCEMENT_FAILED → REVOKING
+```
+
+Terminal states: `DENIED`, `REVOKED`, `EXPIRED`.
+
+### Workflow states and `external_status`
+
+| `workflow_state` | `external_status` |
+|------------------|-------------------|
+| `PAUSED` | `paused` |
+| `ACTIVE` | `active` |
+| `DENIED` | `denied` |
+| `REVOKED` | `revoked` |
+| `EXPIRED` | `expired` |
+| `ENFORCEMENT_FAILED` | `enforcement_failed` |
+| All others | `in_review` |
+
+### JIT routes
+
+| Method | Route | Additional scope | Success | Notes |
+|--------|-------|-----------------|---------|-------|
+| `POST` | `/api/v1/access-requests` | `access:create` | `201` | Idempotency-Key required |
+| `GET` | `/api/v1/access-requests` | `access:read` | `200` | Filter: `?state=PAUSED&resource_id=arn:…` |
+| `GET` | `/api/v1/access-requests/{id}` | `access:read` | `200` | |
+| `GET` | `/api/v1/access-requests/{id}/history` | `access:read` | `200` | Includes `audit_chain_valid` |
+| `POST` | `/api/v1/access-requests/{id}/evidence` | `access:evidence` | `201` | Verified status requires `access:evidence:verify` |
+| `POST` | `/api/v1/access-requests/{id}/evaluate` | `access:evaluate` | `200` | Runs deterministic policy |
+| `POST` | `/api/v1/access-requests/{id}/ai-review` | `access:ai_review` | `202` | Enqueues async job; advisory only |
+| `POST` | `/api/v1/access-requests/{id}/request-context` | `access:request_context` | `200` | Transitions to `MORE_CONTEXT_REQUIRED` |
+| `POST` | `/api/v1/access-requests/{id}/approve` | `access:approve` | `200` | Optimistic version lock required |
+| `POST` | `/api/v1/access-requests/{id}/deny` | `access:deny` | `200` | Optimistic version lock required |
+| `POST` | `/api/v1/access-requests/{id}/revoke` | `access:revoke` | `200` | Only from `ACTIVE` |
+| `GET` | `/api/v1/access-requests/{id}/grant` | `access:read` | `200` | 404 if no grant yet |
+| `GET` | `/api/v1/notifications` | `access:read` | `200` | Tenant-scoped |
+| `POST` | `/api/v1/notifications/{id}/acknowledge` | `access:read` | `200` | |
+| `GET` | `/api/v1/admin/access-policy` | `access:admin` | `200` | Policy constants |
+| `GET` | `/api/v1/admin/access-health` | `access:admin` | `200` | DB, outbox pending count, Groq state |
+
+### Access request body
+
+```json
+{
+  "subject_identity": "emp-001",
+  "resource_id": "arn:prod/db/finance",
+  "resource_sensitivity": "restricted",
+  "requested_action": "read",
+  "requested_permission": "data:read",
+  "business_justification": "Sprint TICKET-1234 requires read access for ETL reconciliation",
+  "requested_duration_seconds": 3600,
+  "existing_entitlements": [],
+  "device_trust": "trusted",
+  "authentication_strength": "mfa",
+  "location_trust": "trusted",
+  "break_glass": false,
+  "linked_case_id": null
+}
+```
+
+`resource_sensitivity` is one of `public`, `internal`, `restricted`, `critical`.
+`device_trust` is `trusted`, `untrusted`, or `unknown`.
+`authentication_strength` is `single_factor`, `mfa`, or `phishing_resistant`.
+`location_trust` is `trusted`, `untrusted`, or `unknown`.
+`business_justification` min 10 chars; instruction-shaped text (`ignore previous instructions`, `<script`, etc.) is rejected with `422`.
+
+### Approval body
+
+```json
+{"decision": "approve", "note": "Evidence verified; scope is appropriate", "expected_version": 3}
+```
+
+`expected_version` is an optimistic lock; a stale version returns `409 Version conflict`.
+Requester cannot approve their own request (`403`).
+Approver role must match a required role from the policy decision (`403`).
+
+### AI advisory invariants
+
+- `ai_advisory_only` is always `true` in access-request responses.
+- AI recommendation (`APPROVE_SCOPED`, `REQUEST_MORE_CONTEXT`, `DENY_AND_ESCALATE`) is shown to reviewers via the `access_ai_reviews` table; it is not exposed in the access-request response and does not gate any transition.
+- If Groq is unavailable: non-critical requests advance to `AWAITING_APPROVAL`; critical requests go to `MORE_CONTEXT_REQUIRED` (fail-closed).
+
+### Grant response
+
+```json
+{
+  "id": "grt_abc123",
+  "request_id": "arq_def456",
+  "exact_resource": "arn:prod/db/finance",
+  "exact_permission": "data:read",
+  "allowed_actions": ["read"],
+  "denied_actions": [],
+  "maximum_ttl_seconds": 3600,
+  "activated_at": "2026-09-17T10:00:00Z",
+  "expires_at": "2026-09-17T11:00:00Z",
+  "required_authentication_strength": "mfa",
+  "approvers": [{"identity": "reviewer-a", "role": "reviewer"}],
+  "enforcement_state": "active",
+  "connector_reference": "sandbox:grt_abc123",
+  "revocation_reason": null
+}
+```
+
+### Continuous monitoring
+
+Every call to `POST /entities/{entity_ref}/events` checks all active JIT grants for the subject. An event outside the grant's `exact_resource` / `allowed_actions` scope triggers:
+
+1. A `scope_violation` notification.
+2. A bounded response hold (if a matching `hold_type` exists and a linked case is present).
+3. A `REVOCATION` outbox job — durable even if Groq and the enforcement webhook are simultaneously unavailable.
+

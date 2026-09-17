@@ -90,8 +90,11 @@ def _idempotency_finish(
         MutationIdempotency.operation == operation,
         MutationIdempotency.idempotency_key == key,
     ).one()
-    row.response_body = payload
+    # Round-trip through JSON to coerce any datetime/Enum values to serializable
+    # primitives before SQLAlchemy writes to the JSON column.
+    row.response_body = json.loads(json.dumps(payload, default=str))
     row.response_status = status
+
 
 
 def _available_actions(request: AccessRequest, principal: Principal) -> list[str]:
